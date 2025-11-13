@@ -3,7 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Module {
   id: string;
@@ -14,10 +17,29 @@ interface Module {
   subject_id: string;
 }
 
+interface Question {
+  id: string;
+  question_text: string;
+  question_type: "multiple_choice" | "fill_in_blank";
+  correct_answer: string;
+  options?: string[];
+  explanation: string;
+  order_index: number;
+}
+
 const Lesson = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [module, setModule] = useState<Module | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -30,7 +52,9 @@ const Lesson = () => {
         return;
       }
 
+      setUserId(session.user.id);
       fetchModule();
+      fetchQuestions();
     };
 
     checkAuth();
@@ -51,6 +75,96 @@ const Lesson = () => {
     setModule(data);
   };
 
+  const fetchQuestions = async () => {
+    const { data, error } = await supabase
+      .from("questions")
+      .select("*")
+      .eq("module_id", lessonId)
+      .order("order_index");
+
+    if (error) {
+      console.error("Error fetching questions:", error);
+      return;
+    }
+
+    const typedQuestions: Question[] = (data || []).map((q) => ({
+      id: q.id,
+      question_text: q.question_text,
+      question_type: q.question_type as "multiple_choice" | "fill_in_blank",
+      correct_answer: q.correct_answer,
+      options: q.options ? (q.options as string[]) : undefined,
+      explanation: q.explanation || "",
+      order_index: q.order_index,
+    }));
+
+    setQuestions(typedQuestions);
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (!userId || !questions[currentQuestionIndex]) return;
+
+    const currentQuestion = questions[currentQuestionIndex];
+    const answer =
+      currentQuestion.question_type === "multiple_choice"
+        ? selectedOption
+        : userAnswer.trim();
+
+    if (!answer) {
+      toast({
+        title: "Please provide an answer",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const correct =
+      answer.toLowerCase() === currentQuestion.correct_answer.toLowerCase();
+    setIsCorrect(correct);
+    setShowFeedback(true);
+
+    if (correct) {
+      setCorrectCount((prev) => prev + 1);
+    }
+
+    // Save attempt
+    await supabase.from("user_question_attempts").insert({
+      user_id: userId,
+      question_id: currentQuestion.id,
+      is_correct: correct,
+      user_answer: answer,
+    });
+  };
+
+  const handleNext = async () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+      setUserAnswer("");
+      setSelectedOption(null);
+      setShowFeedback(false);
+      setIsCorrect(false);
+    } else {
+      // Complete the module
+      if (userId && module) {
+        const accuracy = Math.round((correctCount / questions.length) * 100);
+        
+        await supabase.from("user_module_progress").upsert({
+          user_id: userId,
+          module_id: module.id,
+          is_completed: true,
+          accuracy_percentage: accuracy,
+          completed_at: new Date().toISOString(),
+        });
+
+        toast({
+          title: "Module Complete!",
+          description: `You scored ${accuracy}% accuracy.`,
+        });
+
+        navigate(`/subject/${module.subject_id}`);
+      }
+    }
+  };
+
   const handleBack = () => {
     if (module) {
       navigate(`/subject/${module.subject_id}`);
@@ -59,13 +173,16 @@ const Lesson = () => {
     }
   };
 
-  if (!module) {
+  if (!module || questions.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+        <p className="text-muted-foreground">Loading questions...</p>
       </div>
     );
   }
+
+  const currentQuestion = questions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
@@ -83,25 +200,98 @@ const Lesson = () => {
 
       <main className="container max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <div className="text-sm text-muted-foreground mb-2 uppercase tracking-wide">
-            {module.difficulty_level} Level
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-sm text-muted-foreground uppercase tracking-wide">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </div>
+            <div className="text-sm font-semibold">
+              Score: {correctCount}/{questions.length}
+            </div>
           </div>
-          <h2 className="text-4xl font-bold mb-4">{module.title}</h2>
-          <p className="text-lg text-muted-foreground">
-            {module.description || `Practice with ${module.question_count} questions`}
-          </p>
+          <Progress value={progress} className="mb-4" />
+          <h2 className="text-3xl font-bold mb-2">{module.title}</h2>
         </div>
 
-        <Card className="p-12 text-center bg-card/50 backdrop-blur border-2">
-          <h3 className="text-2xl font-bold mb-4">Practice Mode Coming Soon</h3>
-          <p className="text-muted-foreground mb-6">
-            Interactive practice sessions with {module.question_count} questions are being developed
-            for this lesson. You'll be able to test your knowledge with multiple choice,
-            fill-in-the-blank, and code challenges.
-          </p>
-          <Button variant="gradient" onClick={handleBack}>
-            Back to Roadmap
-          </Button>
+        <Card className="p-8 bg-card/50 backdrop-blur border-2">
+          <h3 className="text-2xl font-semibold mb-6">
+            {currentQuestion.question_text}
+          </h3>
+
+          {currentQuestion.question_type === "multiple_choice" ? (
+            <div className="space-y-3">
+              {currentQuestion.options?.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => !showFeedback && setSelectedOption(option)}
+                  disabled={showFeedback}
+                  className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
+                    selectedOption === option
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50"
+                  } ${showFeedback ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <Input
+              type="text"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              placeholder="Type your answer..."
+              disabled={showFeedback}
+              className="text-lg p-6"
+              onKeyPress={(e) => {
+                if (e.key === "Enter" && !showFeedback) {
+                  handleSubmitAnswer();
+                }
+              }}
+            />
+          )}
+
+          {showFeedback && (
+            <div
+              className={`mt-6 p-4 rounded-lg border-2 ${
+                isCorrect
+                  ? "border-green-500 bg-green-500/10"
+                  : "border-red-500 bg-red-500/10"
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                {isCorrect ? (
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                ) : (
+                  <XCircle className="w-5 h-5 text-red-500" />
+                )}
+                <span className="font-semibold">
+                  {isCorrect ? "Correct!" : "Incorrect"}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {currentQuestion.explanation}
+              </p>
+              {!isCorrect && (
+                <p className="text-sm mt-2">
+                  <strong>Correct answer:</strong> {currentQuestion.correct_answer}
+                </p>
+              )}
+            </div>
+          )}
+
+          <div className="mt-6 flex justify-end gap-3">
+            {!showFeedback ? (
+              <Button onClick={handleSubmitAnswer} size="lg">
+                Submit Answer
+              </Button>
+            ) : (
+              <Button onClick={handleNext} size="lg">
+                {currentQuestionIndex < questions.length - 1
+                  ? "Next Question"
+                  : "Complete Module"}
+              </Button>
+            )}
+          </div>
         </Card>
       </main>
     </div>

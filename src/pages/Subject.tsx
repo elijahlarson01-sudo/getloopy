@@ -34,6 +34,7 @@ interface LevelGroup {
   emoji: string;
   modules: Module[];
   totalQuestions: number;
+  isLocked: boolean;
 }
 
 const iconMap: Record<string, any> = {
@@ -131,14 +132,26 @@ const Subject = () => {
     };
 
     modules.forEach((module) => {
-      const level = module.difficulty_level as keyof typeof levels;
+      const level = module.difficulty_level.toLowerCase() as keyof typeof levels;
       if (levels[level]) {
         levels[level].modules.push(module);
         levels[level].totalQuestions += module.question_count;
       }
     });
 
-    return Object.values(levels).filter(group => group.modules.length > 0);
+    // Check if beginner level is complete
+    const beginnerComplete = levels.beginner.modules.length > 0 && 
+      levels.beginner.modules.every(m => moduleProgress[m.id]?.is_completed);
+
+    // Check if intermediate level is complete
+    const intermediateComplete = levels.intermediate.modules.length > 0 &&
+      levels.intermediate.modules.every(m => moduleProgress[m.id]?.is_completed);
+
+    return [
+      { ...levels.beginner, isLocked: false },
+      { ...levels.intermediate, isLocked: !beginnerComplete },
+      { ...levels.advanced, isLocked: !intermediateComplete },
+    ].filter(group => group.modules.length > 0);
   };
 
   const handleModuleClick = (moduleId: string) => {
@@ -219,83 +232,95 @@ const Subject = () => {
             </p>
           </div>
 
-          {levelGroups.map((group, groupIndex) => (
-            <div key={group.level} className="space-y-4">
-              <div className="flex items-center gap-3">
-                <h4 className="text-xl font-bold">
-                  {group.emoji} {group.level}
-                </h4>
-                <Badge variant="outline">
-                  {group.modules.length} lessons, {group.totalQuestions} questions
-                </Badge>
-              </div>
+          {levelGroups.map((group, groupIndex) => {
+            const isLevelLocked = group.isLocked;
+            
+            return (
+              <div key={group.level} className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <h4 className={`text-xl font-bold ${isLevelLocked ? 'text-muted-foreground' : ''}`}>
+                    {group.emoji} {group.level}
+                  </h4>
+                  <Badge variant="outline" className={isLevelLocked ? 'opacity-60' : ''}>
+                    {group.modules.length} lessons, {group.totalQuestions} questions
+                  </Badge>
+                  {isLevelLocked && (
+                    <Badge variant="outline" className="bg-muted text-muted-foreground">
+                      <Lock className="w-3 h-3 mr-1" /> Locked
+                    </Badge>
+                  )}
+                </div>
 
-              <div className="grid gap-3">
-                {group.modules.map((module, moduleIndex) => {
-                  const progress = moduleProgress[module.id];
-                  const isCompleted = progress?.is_completed || false;
-                  const isPreviousCompleted = moduleIndex === 0 || 
-                    moduleProgress[group.modules[moduleIndex - 1].id]?.is_completed ||
-                    groupIndex > 0;
+                <div className="grid gap-3">
+                  {group.modules.map((module, moduleIndex) => {
+                    const progress = moduleProgress[module.id];
+                    const isCompleted = progress?.is_completed || false;
+                    const isPreviousCompleted = moduleIndex === 0 || 
+                      moduleProgress[group.modules[moduleIndex - 1].id]?.is_completed ||
+                      groupIndex > 0;
+                    const isModuleLocked = isLevelLocked || !isPreviousCompleted;
 
-                  return (
-                    <Card
-                      key={module.id}
-                      className={`p-4 transition-all ${
-                        isCompleted
-                          ? "bg-success/10 border-success/30"
-                          : isPreviousCompleted
-                          ? "bg-primary/5 border-primary/20 hover:border-primary/40 cursor-pointer hover:shadow-md"
-                          : "bg-muted/30 border-border opacity-60"
-                      }`}
-                      onClick={() => isPreviousCompleted && handleModuleClick(module.id)}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                            isCompleted
-                              ? "bg-success"
-                              : isPreviousCompleted
-                              ? "bg-gradient-to-br from-primary to-primary-light"
-                              : "bg-muted"
-                          }`}
-                        >
-                          {isCompleted ? (
-                            <CheckCircle2 className="w-6 h-6 text-success-foreground" />
-                          ) : isPreviousCompleted ? (
-                            <Play className="w-6 h-6 text-primary-foreground" />
-                          ) : (
-                            <Lock className="w-6 h-6 text-muted-foreground" />
+                    return (
+                      <Card
+                        key={module.id}
+                        className={`p-4 transition-all ${
+                          isCompleted
+                            ? "bg-success/10 border-success/30"
+                            : !isModuleLocked
+                            ? "bg-primary/5 border-primary/20 hover:border-primary/40 cursor-pointer hover:shadow-md"
+                            : "bg-muted/30 border-border opacity-60"
+                        }`}
+                        onClick={() => !isModuleLocked && handleModuleClick(module.id)}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                              isCompleted
+                                ? "bg-success"
+                                : !isModuleLocked
+                                ? "bg-gradient-to-br from-primary to-primary-light"
+                                : "bg-muted"
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <CheckCircle2 className="w-6 h-6 text-success-foreground" />
+                            ) : !isModuleLocked ? (
+                              <Play className="w-6 h-6 text-primary-foreground" />
+                            ) : (
+                              <Lock className="w-6 h-6 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h5 className="font-bold text-foreground">{module.title}</h5>
+                            <p className="text-sm text-muted-foreground">
+                              {module.description || `${module.question_count} practice questions`}
+                            </p>
+                            {isCompleted && progress && (
+                              <p className="text-sm text-success mt-1">
+                                Completed • {progress.accuracy_percentage}% accuracy
+                              </p>
+                            )}
+                            {isModuleLocked && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {isLevelLocked 
+                                  ? "Complete previous level to unlock"
+                                  : "Complete previous lesson to unlock"}
+                              </p>
+                            )}
+                          </div>
+                          {!isModuleLocked && !isCompleted && (
+                            <Button size="sm" variant="gradient">
+                              Start
+                            </Button>
                           )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h5 className="font-bold text-foreground">{module.title}</h5>
-                          <p className="text-sm text-muted-foreground">
-                            {module.description || `${module.question_count} practice questions`}
-                          </p>
-                          {isCompleted && progress && (
-                            <p className="text-sm text-success mt-1">
-                              Completed • {progress.accuracy_percentage}% accuracy
-                            </p>
-                          )}
-                          {!isCompleted && !isPreviousCompleted && (
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Complete previous lesson to unlock
-                            </p>
-                          )}
-                        </div>
-                        {isPreviousCompleted && !isCompleted && (
-                          <Button size="sm" variant="gradient">
-                            Start
-                          </Button>
-                        )}
-                      </div>
-                    </Card>
-                  );
-                })}
+                      </Card>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </main>
     </div>
