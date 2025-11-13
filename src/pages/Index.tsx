@@ -2,24 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Flame, 
-  Target, 
-  Trophy, 
-  Users, 
-  Zap, 
-  Brain,
-  Code,
-  BookOpen,
-  TrendingUp,
-  Award,
-  CheckCircle2,
-  Lock
-} from "lucide-react";
-
+import { Flame, Target, Trophy, Users, Zap, Brain, Code, BookOpen, TrendingUp, Award, CheckCircle2, Lock } from "lucide-react";
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
       {/* Hero Section */}
       <section className="relative px-4 py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.1),transparent_50%)]" />
@@ -218,11 +203,9 @@ const Index = () => {
       {/* Footer */}
       <footer className="px-4 py-8 border-t border-border">
         <div className="container max-w-6xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© 2025 Loop. Built to help you retain what you learn.</p>
+          <p>© 2025 Loop. Builyt by ELijah Larson, enjoy!                                   </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
