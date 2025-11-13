@@ -148,6 +148,53 @@ const Lesson = () => {
         const accuracy = Math.round((correctCount / questions.length) * 100);
         
         if (accuracy >= 80) {
+          // Calculate mastery points: 10 points per percentage (88% = 8.8 points)
+          const pointsEarned = accuracy * 0.1;
+
+          // Fetch current user progress
+          const { data: currentProgress } = await supabase
+            .from("user_progress")
+            .select("*")
+            .eq("user_id", userId)
+            .single();
+
+          let newStreak = 1;
+          const today = new Date().toISOString().split('T')[0];
+
+          if (currentProgress) {
+            const lastPracticeDate = currentProgress.last_practice_date;
+            
+            if (lastPracticeDate) {
+              const lastDate = new Date(lastPracticeDate);
+              const todayDate = new Date(today);
+              const yesterday = new Date(todayDate);
+              yesterday.setDate(yesterday.getDate() - 1);
+              
+              const lastDateStr = lastDate.toISOString().split('T')[0];
+              const yesterdayStr = yesterday.toISOString().split('T')[0];
+              
+              if (lastDateStr === today) {
+                // Already practiced today, keep current streak
+                newStreak = currentProgress.current_streak;
+              } else if (lastDateStr === yesterdayStr) {
+                // Practiced yesterday, increment streak
+                newStreak = currentProgress.current_streak + 1;
+              } else {
+                // Streak broken, reset to 1
+                newStreak = 1;
+              }
+            }
+
+            // Update user progress with new points and streak
+            await supabase.from("user_progress").upsert({
+              user_id: userId,
+              mastery_points: currentProgress.mastery_points + pointsEarned,
+              current_streak: newStreak,
+              last_practice_date: today,
+            });
+          }
+
+          // Update module progress
           await supabase.from("user_module_progress").upsert({
             user_id: userId,
             module_id: module.id,
@@ -158,7 +205,7 @@ const Lesson = () => {
 
           toast({
             title: "Module Complete! 🎉",
-            description: `You scored ${accuracy}% accuracy.`,
+            description: `You scored ${accuracy}% and earned ${pointsEarned.toFixed(1)} mastery points!`,
           });
 
           navigate(`/subject/${module.subject_id}`);
