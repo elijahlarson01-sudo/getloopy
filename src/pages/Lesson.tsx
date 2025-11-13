@@ -147,20 +147,36 @@ const Lesson = () => {
       if (userId && module) {
         const accuracy = Math.round((correctCount / questions.length) * 100);
         
-        await supabase.from("user_module_progress").upsert({
-          user_id: userId,
-          module_id: module.id,
-          is_completed: true,
-          accuracy_percentage: accuracy,
-          completed_at: new Date().toISOString(),
-        });
+        if (accuracy >= 80) {
+          await supabase.from("user_module_progress").upsert({
+            user_id: userId,
+            module_id: module.id,
+            is_completed: true,
+            accuracy_percentage: accuracy,
+            completed_at: new Date().toISOString(),
+          });
 
-        toast({
-          title: "Module Complete!",
-          description: `You scored ${accuracy}% accuracy.`,
-        });
+          toast({
+            title: "Module Complete! 🎉",
+            description: `You scored ${accuracy}% accuracy.`,
+          });
 
-        navigate(`/subject/${module.subject_id}`);
+          navigate(`/subject/${module.subject_id}`);
+        } else {
+          toast({
+            title: "Practice More Needed",
+            description: `You scored ${accuracy}%. You need 80% to complete this module. Try again!`,
+            variant: "destructive",
+          });
+
+          // Reset to try again
+          setCurrentQuestionIndex(0);
+          setCorrectCount(0);
+          setUserAnswer("");
+          setSelectedOption(null);
+          setShowFeedback(false);
+          setIsCorrect(false);
+        }
       }
     }
   };
