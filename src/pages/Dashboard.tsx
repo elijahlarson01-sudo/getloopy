@@ -120,6 +120,16 @@ const Dashboard = () => {
     }
     setUserProgress(progress);
 
+    // Fetch user's selected subject interests
+    const {
+      data: interests,
+      error: interestsError
+    } = await supabase.from("user_subject_interests").select("interest_category").eq("user_id", userId);
+    if (interestsError) {
+      console.error("Error fetching interests:", interestsError);
+    }
+    const selectedInterests = interests?.map(i => i.interest_category) || [];
+
     // Fetch all subjects
     const {
       data: subjectsData,
@@ -129,7 +139,12 @@ const Dashboard = () => {
       console.error("Error fetching subjects:", subjectsError);
       return;
     }
-    setSubjects(subjectsData || []);
+    
+    // Filter subjects to only show user's selected interests
+    const filteredSubjects = selectedInterests.length > 0
+      ? subjectsData?.filter(s => selectedInterests.includes(s.name)) || []
+      : subjectsData || [];
+    setSubjects(filteredSubjects);
 
     // Fetch user subject progress
     const {
