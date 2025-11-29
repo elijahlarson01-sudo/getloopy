@@ -7,31 +7,13 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { 
-  Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, 
-  Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom,
-  Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart,
-  Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon
-} from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom, Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart, Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon } from "lucide-react";
 import WeeklyActivityChart from "@/components/WeeklyActivityChart";
 import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
 import CohortLeaderboard from "@/components/CohortLeaderboard";
 import type { User } from "@supabase/supabase-js";
-
 interface UserProgress {
   current_streak: number;
   mastery_points: number;
@@ -49,7 +31,6 @@ interface SubjectProgress {
   lessons_completed: number;
   accuracy_percentage: number;
 }
-
 const iconMap: Record<string, any> = {
   Database,
   BarChart3,
@@ -74,7 +55,7 @@ const iconMap: Record<string, any> = {
   BookMarked,
   Pi,
   Zap,
-  Languages,
+  Languages
 };
 const Dashboard = () => {
   const [user, setUser] = useState<import("@supabase/supabase-js").User | null>(null);
@@ -86,7 +67,9 @@ const Dashboard = () => {
   const [editingName, setEditingName] = useState("");
   const [savingName, setSavingName] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     const checkAuth = async () => {
       const {
@@ -100,17 +83,13 @@ const Dashboard = () => {
       }
 
       // Check if onboarding completed
-      const { data: onboarding } = await supabase
-        .from("user_onboarding")
-        .select("onboarding_completed")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
+      const {
+        data: onboarding
+      } = await supabase.from("user_onboarding").select("onboarding_completed").eq("user_id", session.user.id).maybeSingle();
       if (!onboarding?.onboarding_completed) {
         navigate("/onboarding");
         return;
       }
-
       setUser(session.user);
       await fetchUserData(session.user.id);
       await fetchUserName(session.user.id);
@@ -175,11 +154,9 @@ const Dashboard = () => {
       console.error("Error fetching subjects:", subjectsError);
       return;
     }
-    
+
     // Filter subjects to only show user's selected interests (match by name OR id)
-    const filteredSubjects = selectedInterests.length > 0
-      ? subjectsData?.filter(s => selectedInterests.includes(s.name) || selectedInterests.includes(s.id)) || []
-      : subjectsData || [];
+    const filteredSubjects = selectedInterests.length > 0 ? subjectsData?.filter(s => selectedInterests.includes(s.name) || selectedInterests.includes(s.id)) || [] : subjectsData || [];
     setSubjects(filteredSubjects);
 
     // Fetch user subject progress
@@ -201,48 +178,40 @@ const Dashboard = () => {
     });
     setSubjectProgress(progressMap);
   };
-
   const fetchUserName = async (userId: string) => {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("id", userId)
-      .maybeSingle();
-    
+    const {
+      data: profile
+    } = await supabase.from("profiles").select("full_name").eq("id", userId).maybeSingle();
     if (profile?.full_name) {
       setUserName(profile.full_name);
     }
   };
-
   const handleSaveName = async () => {
     if (!user || !editingName.trim()) return;
-    
     setSavingName(true);
-    const { error } = await supabase
-      .from("profiles")
-      .upsert({
-        id: user.id,
-        full_name: editingName.trim(),
-        email: user.email,
-      });
-    
+    const {
+      error
+    } = await supabase.from("profiles").upsert({
+      id: user.id,
+      full_name: editingName.trim(),
+      email: user.email
+    });
     if (error) {
       toast({
         title: "Error",
         description: "Failed to save name",
-        variant: "destructive",
+        variant: "destructive"
       });
     } else {
       setUserName(editingName.trim());
       setEditNameOpen(false);
       toast({
         title: "Name updated",
-        description: "Your display name has been updated.",
+        description: "Your display name has been updated."
       });
     }
     setSavingName(false);
   };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({
@@ -273,9 +242,9 @@ const Dashboard = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={() => {
-                setEditingName(userName);
-                setEditNameOpen(true);
-              }}>
+              setEditingName(userName);
+              setEditNameOpen(true);
+            }}>
                 <UserIcon className="w-4 h-4 mr-2" />
                 Edit Name
               </DropdownMenuItem>
@@ -298,7 +267,7 @@ const Dashboard = () => {
           <h2 className="text-3xl font-bold mb-2">
             Welcome back{userName ? `, ${userName}` : ""}!
           </h2>
-          <p className="text-muted-foreground">What took you so long?! Click a few subjects below to test your skills - Eli</p>
+          <p className="text-muted-foreground">What took you so long?! Click a few subjects below to test your skills</p>
         </div>
 
         {/* Edit Name Dialog */}
@@ -310,12 +279,7 @@ const Dashboard = () => {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Display Name</Label>
-                <Input
-                  id="name"
-                  value={editingName}
-                  onChange={(e) => setEditingName(e.target.value)}
-                  placeholder="Enter your name"
-                />
+                <Input id="name" value={editingName} onChange={e => setEditingName(e.target.value)} placeholder="Enter your name" />
               </div>
             </div>
             <DialogFooter>
@@ -383,12 +347,7 @@ const Dashboard = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-2xl font-bold">Your Subjects</h3>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/onboarding?edit=true&step=subjects")}
-              className="gap-2"
-            >
+            <Button variant="outline" size="sm" onClick={() => navigate("/onboarding?edit=true&step=subjects")} className="gap-2">
               <Pencil className="w-4 h-4" />
               Edit Subjects
             </Button>
