@@ -158,28 +158,56 @@ const Lesson = () => {
             .eq("user_id", userId)
             .maybeSingle();
 
+          const today = new Date();
+          const todayStr = today.toISOString().split('T')[0];
+          
+          // Get start of current week (Monday)
+          const getWeekStart = (date: Date) => {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
+            d.setDate(diff);
+            return d.toISOString().split('T')[0];
+          };
+          
+          const currentWeekStart = getWeekStart(today);
+          
           let newStreak = 1;
-          let currentPoints = 0;
-          const today = new Date().toISOString().split('T')[0];
+          let totalPoints = 0;
+          let weeklyPoints = 0;
 
           if (currentProgress) {
-            currentPoints = currentProgress.mastery_points || 0;
-            const lastPracticeDate = currentProgress.last_practice_date;
+            totalPoints = currentProgress.mastery_points || 0;
+            weeklyPoints = currentProgress.weekly_mastery_points || 0;
             
+            // Check if we need to reset weekly points (new week started)
+            const lastResetDate = currentProgress.weekly_points_reset_date;
+            if (lastResetDate) {
+              const lastResetWeekStart = getWeekStart(new Date(lastResetDate));
+              if (lastResetWeekStart !== currentWeekStart) {
+                // New week, reset weekly points
+                weeklyPoints = 0;
+              }
+            }
+            
+            // Handle streak logic
+            const lastPracticeDate = currentProgress.last_practice_date;
             if (lastPracticeDate) {
               const lastDate = new Date(lastPracticeDate);
-              const todayDate = new Date(today);
-              const yesterday = new Date(todayDate);
+              const yesterday = new Date(today);
               yesterday.setDate(yesterday.getDate() - 1);
               
               const lastDateStr = lastDate.toISOString().split('T')[0];
               const yesterdayStr = yesterday.toISOString().split('T')[0];
               
-              if (lastDateStr === today) {
-                newStreak = currentProgress.current_streak;
+              if (lastDateStr === todayStr) {
+                // Already practiced today, increment streak by 1 for each lesson
+                newStreak = currentProgress.current_streak + 1;
               } else if (lastDateStr === yesterdayStr) {
+                // Practiced yesterday, increment streak
                 newStreak = currentProgress.current_streak + 1;
               } else {
+                // Streak broken, start fresh
                 newStreak = 1;
               }
             }
@@ -188,9 +216,11 @@ const Lesson = () => {
           // Update user progress with new points and streak
           await supabase.from("user_progress").upsert({
             user_id: userId,
-            mastery_points: currentPoints + pointsEarned,
+            mastery_points: totalPoints + pointsEarned,
+            weekly_mastery_points: weeklyPoints + pointsEarned,
+            weekly_points_reset_date: currentWeekStart,
             current_streak: newStreak,
-            last_practice_date: today,
+            last_practice_date: todayStr,
           });
 
           // Update module progress

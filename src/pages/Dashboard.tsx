@@ -10,6 +10,7 @@ import type { User } from "@supabase/supabase-js";
 interface UserProgress {
   current_streak: number;
   mastery_points: number;
+  weekly_mastery_points: number;
 }
 interface Subject {
   id: string;
@@ -82,7 +83,8 @@ const Dashboard = () => {
       } = await supabase.from("user_progress").insert({
         user_id: userId,
         current_streak: 0,
-        mastery_points: 0
+        mastery_points: 0,
+        weekly_mastery_points: 0
       }).select().single();
       if (insertError) {
         console.error("Error creating progress:", insertError);
@@ -183,10 +185,10 @@ const Dashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Mastery Points
+                  Weekly Points
                 </p>
                 <h3 className="text-5xl font-black text-foreground mt-1">
-                  {userProgress.mastery_points}
+                  {userProgress.weekly_mastery_points || 0}
                 </h3>
               </div>
               <div className="relative">
@@ -195,7 +197,7 @@ const Dashboard = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Complete lessons to earn more points
+              Resets every Monday • Total: {userProgress.mastery_points} pts
             </p>
           </Card>
         </div>
