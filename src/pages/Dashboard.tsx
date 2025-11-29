@@ -15,6 +15,7 @@ import {
 import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom } from "lucide-react";
 import WeeklyActivityChart from "@/components/WeeklyActivityChart";
 import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
+import CohortLeaderboard from "@/components/CohortLeaderboard";
 import type { User } from "@supabase/supabase-js";
 
 interface UserProgress {
@@ -260,10 +261,11 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Analytics Charts */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        {/* Analytics Charts & Leaderboard */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <WeeklyActivityChart userId={user.id} />
           <SubjectBreakdownChart subjects={subjects} subjectProgress={subjectProgress} />
+          <CohortLeaderboard userId={user.id} />
         </div>
 
         {/* Subjects */}
