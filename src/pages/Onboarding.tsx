@@ -280,7 +280,8 @@ const Onboarding = () => {
   };
 
   const isLastStep = isStudyingDegree ? step === 5 : step === 3;
-  const displaySubjects = isStudyingDegree && cohortSubjects.length > 0 ? cohortSubjects : subjects;
+  // General subjects are all subjects not in cohort-specific list
+  const generalSubjects = subjects.filter(s => !cohortSubjects.some(cs => cs.id === s.id));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center px-4 py-8">
@@ -427,26 +428,49 @@ const Onboarding = () => {
           </div>
         )}
 
-        {/* Step 5: Subject Selection (students only, cohort-specific) */}
+        {/* Step 5: Subject Selection (students only, cohort-specific AND general) */}
         {step === 5 && isStudyingDegree && (
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-bold text-foreground mb-2">Select your subjects</h2>
-              <p className="text-muted-foreground text-sm">
-                {cohortSubjects.length > 0 ? "Subjects available for your degree" : "Select all that apply"}
-              </p>
+              <p className="text-muted-foreground text-sm">Choose from your degree subjects and general topics</p>
             </div>
-            <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
-              {displaySubjects.map(subject => (
-                <button
-                  key={subject.id}
-                  onClick={() => toggleInterest(subject.id)}
-                  className={cn("p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3", selectedInterests.includes(subject.id) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
-                >
-                  <span className="font-medium text-sm flex-1">{subject.name}</span>
-                  {selectedInterests.includes(subject.id) && <Check className="w-4 h-4 text-primary" />}
-                </button>
-              ))}
+            <div className="max-h-[400px] overflow-y-auto space-y-6">
+              {/* Cohort-specific subjects */}
+              {cohortSubjects.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Your Degree Subjects</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {cohortSubjects.map(subject => (
+                      <button
+                        key={subject.id}
+                        onClick={() => toggleInterest(subject.id)}
+                        className={cn("p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3", selectedInterests.includes(subject.id) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                      >
+                        <span className="font-medium text-sm flex-1">{subject.name}</span>
+                        {selectedInterests.includes(subject.id) && <Check className="w-4 h-4 text-primary" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* General subjects */}
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">General Topics</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {generalSubjects.map(subject => (
+                    <button
+                      key={subject.id}
+                      onClick={() => toggleInterest(subject.id)}
+                      className={cn("p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3", selectedInterests.includes(subject.id) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                    >
+                      <span className="font-medium text-sm flex-1">{subject.name}</span>
+                      {selectedInterests.includes(subject.id) && <Check className="w-4 h-4 text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
