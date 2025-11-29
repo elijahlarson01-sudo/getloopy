@@ -12,7 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom } from "lucide-react";
+import { 
+  Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, 
+  Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom,
+  Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart,
+  Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages
+} from "lucide-react";
 import WeeklyActivityChart from "@/components/WeeklyActivityChart";
 import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
 import CohortLeaderboard from "@/components/CohortLeaderboard";
@@ -35,6 +40,7 @@ interface SubjectProgress {
   lessons_completed: number;
   accuracy_percentage: number;
 }
+
 const iconMap: Record<string, any> = {
   Database,
   BarChart3,
@@ -46,6 +52,20 @@ const iconMap: Record<string, any> = {
   Leaf,
   TrendingUp,
   Atom,
+  Lightbulb,
+  FlaskConical,
+  MousePointerClick,
+  Megaphone,
+  Cog,
+  ShoppingCart,
+  Target,
+  Truck,
+  Brush,
+  Dna,
+  BookMarked,
+  Pi,
+  Zap,
+  Languages,
 };
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
