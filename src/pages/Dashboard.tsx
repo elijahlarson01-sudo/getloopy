@@ -275,7 +275,7 @@ const Dashboard = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate("/onboarding?edit=true")}
+              onClick={() => navigate("/onboarding?edit=true&step=subjects")}
               className="gap-2"
             >
               <Pencil className="w-4 h-4" />
