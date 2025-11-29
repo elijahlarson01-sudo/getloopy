@@ -15,6 +15,7 @@ const Auth = () => {
   const [mode, setMode] = useState<AuthMode>("select");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -69,7 +70,7 @@ const Auth = () => {
           navigate("/onboarding");
         }
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -78,6 +79,15 @@ const Auth = () => {
         });
 
         if (error) throw error;
+
+        // Create profile with first name
+        if (data.user) {
+          await supabase.from("profiles").insert({
+            id: data.user.id,
+            email: email,
+            full_name: firstName,
+          });
+        }
 
         toast({
           title: "Welcome to Loop!",
@@ -99,6 +109,7 @@ const Auth = () => {
   const resetForm = () => {
     setEmail("");
     setPassword("");
+    setFirstName("");
     setMode("select");
   };
 
@@ -179,6 +190,20 @@ const Auth = () => {
             </p>
 
             <form onSubmit={handleAuth} className="space-y-4">
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    placeholder="Your first name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
