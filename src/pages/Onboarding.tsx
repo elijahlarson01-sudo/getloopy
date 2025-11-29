@@ -14,22 +14,15 @@ const MOTIVATIONS = [
   { id: "personal-interest", label: "Personal Interest", icon: "💡" },
 ];
 
-const INTERESTS = [
-  { id: "programming", label: "Computer Programming", icon: "💻" },
-  { id: "data-science", label: "Data Science & Analytics", icon: "📊" },
-  { id: "history", label: "History", icon: "📜" },
-  { id: "medicine", label: "Medicine & Health", icon: "🏥" },
-  { id: "math", label: "Mathematics", icon: "🔢" },
-  { id: "languages", label: "Languages", icon: "🌍" },
-  { id: "business", label: "Business & Finance", icon: "💼" },
-  { id: "science", label: "Science", icon: "🔬" },
-  { id: "writing", label: "Writing & Communication", icon: "✍️" },
-  { id: "arts", label: "Arts & Design", icon: "🎨" },
-];
-
 interface Cohort {
   id: string;
   degree_name: string;
+}
+
+interface Subject {
+  id: string;
+  name: string;
+  icon: string;
 }
 
 const Onboarding = () => {
@@ -39,6 +32,7 @@ const Onboarding = () => {
   const [isStudyingDegree, setIsStudyingDegree] = useState<boolean | null>(null);
   const [selectedCohort, setSelectedCohort] = useState<string | null>(null);
   const [cohorts, setCohorts] = useState<Cohort[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   
@@ -74,8 +68,17 @@ const Onboarding = () => {
       if (data) setCohorts(data);
     };
 
+    const fetchSubjects = async () => {
+      const { data } = await supabase
+        .from("subjects")
+        .select("id, name, icon")
+        .order("name");
+      if (data) setSubjects(data);
+    };
+
     checkAuth();
     fetchCohorts();
+    fetchSubjects();
   }, [navigate]);
 
   const toggleInterest = (id: string) => {
@@ -228,20 +231,19 @@ const Onboarding = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
-              {INTERESTS.map((interest) => (
+              {subjects.map((subject) => (
                 <button
-                  key={interest.id}
-                  onClick={() => toggleInterest(interest.id)}
+                  key={subject.id}
+                  onClick={() => toggleInterest(subject.id)}
                   className={cn(
                     "p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3",
-                    selectedInterests.includes(interest.id)
+                    selectedInterests.includes(subject.id)
                       ? "border-primary bg-primary/10"
                       : "border-border hover:border-primary/50 bg-card"
                   )}
                 >
-                  <span className="text-xl">{interest.icon}</span>
-                  <span className="font-medium text-sm flex-1">{interest.label}</span>
-                  {selectedInterests.includes(interest.id) && (
+                  <span className="font-medium text-sm flex-1">{subject.name}</span>
+                  {selectedInterests.includes(subject.id) && (
                     <Check className="w-4 h-4 text-primary" />
                   )}
                 </button>
