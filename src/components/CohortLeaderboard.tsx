@@ -59,24 +59,26 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
 
       const userIds = cohortUsers.map(u => u.user_id);
 
-      // Get profiles and progress for these users
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, email, full_name")
-        .in("id", userIds);
-
+      // Get progress for these users
       const { data: progressData } = await supabase
         .from("user_progress")
         .select("user_id, weekly_mastery_points, mastery_points")
         .in("user_id", userIds);
 
-      // Combine data
-      const membersWithProgress: CohortMember[] = (profiles || []).map(profile => {
-        const progress = progressData?.find(p => p.user_id === profile.id);
+      // Try to get profiles (may be empty due to RLS or missing data)
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .in("id", userIds);
+
+      // Combine data - create entries for all users even without profiles
+      const membersWithProgress: CohortMember[] = userIds.map((uid, index) => {
+        const profile = profiles?.find(p => p.id === uid);
+        const progress = progressData?.find(p => p.user_id === uid);
         return {
-          user_id: profile.id,
-          email: profile.email || "Anonymous",
-          full_name: profile.full_name,
+          user_id: uid,
+          email: profile?.email || `Student ${index + 1}`,
+          full_name: profile?.full_name || null,
           weekly_mastery_points: progress?.weekly_mastery_points || 0,
           mastery_points: progress?.mastery_points || 0,
         };
