@@ -203,6 +203,8 @@ export type Database = {
           mastery_points: number
           updated_at: string
           user_id: string
+          weekly_mastery_points: number
+          weekly_points_reset_date: string | null
         }
         Insert: {
           created_at?: string
@@ -212,6 +214,8 @@ export type Database = {
           mastery_points?: number
           updated_at?: string
           user_id: string
+          weekly_mastery_points?: number
+          weekly_points_reset_date?: string | null
         }
         Update: {
           created_at?: string
@@ -221,6 +225,8 @@ export type Database = {
           mastery_points?: number
           updated_at?: string
           user_id?: string
+          weekly_mastery_points?: number
+          weekly_points_reset_date?: string | null
         }
         Relationships: []
       }
