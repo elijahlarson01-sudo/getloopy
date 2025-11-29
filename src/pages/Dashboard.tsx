@@ -140,9 +140,9 @@ const Dashboard = () => {
       return;
     }
     
-    // Filter subjects to only show user's selected interests
+    // Filter subjects to only show user's selected interests (match by name OR id)
     const filteredSubjects = selectedInterests.length > 0
-      ? subjectsData?.filter(s => selectedInterests.includes(s.name)) || []
+      ? subjectsData?.filter(s => selectedInterests.includes(s.name) || selectedInterests.includes(s.id)) || []
       : subjectsData || [];
     setSubjects(filteredSubjects);
 
