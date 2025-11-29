@@ -17,12 +17,25 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Check if user is already logged in and onboarding status
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard");
+        // Check if onboarding completed
+        const { data: onboarding } = await supabase
+          .from("user_onboarding")
+          .select("onboarding_completed")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+
+        if (onboarding?.onboarding_completed) {
+          navigate("/dashboard");
+        } else {
+          navigate("/onboarding");
+        }
       }
-    });
+    };
+    checkSession();
   }, [navigate]);
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -38,11 +51,23 @@ const Auth = () => {
 
         if (error) throw error;
 
+        // Check onboarding status before redirecting
+        const { data: onboarding } = await supabase
+          .from("user_onboarding")
+          .select("onboarding_completed")
+          .eq("user_id", (await supabase.auth.getUser()).data.user?.id)
+          .maybeSingle();
+
         toast({
           title: "Welcome back!",
           description: "You've successfully signed in.",
         });
-        navigate("/dashboard");
+        
+        if (onboarding?.onboarding_completed) {
+          navigate("/dashboard");
+        } else {
+          navigate("/onboarding");
+        }
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -56,9 +81,9 @@ const Auth = () => {
 
         toast({
           title: "Account created!",
-          description: "You've successfully signed up.",
+          description: "Let's personalize your experience.",
         });
-        navigate("/dashboard");
+        navigate("/onboarding");
       }
     } catch (error: any) {
       toast({

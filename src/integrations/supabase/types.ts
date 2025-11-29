@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      cohorts: {
+        Row: {
+          created_at: string | null
+          degree_name: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          degree_name: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          degree_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
       modules: {
         Row: {
           created_at: string
@@ -194,6 +212,47 @@ export type Database = {
           },
         ]
       }
+      user_onboarding: {
+        Row: {
+          cohort_id: string | null
+          created_at: string | null
+          id: string
+          is_studying_degree: boolean | null
+          motivation: string | null
+          onboarding_completed: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cohort_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_studying_degree?: boolean | null
+          motivation?: string | null
+          onboarding_completed?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cohort_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_studying_degree?: boolean | null
+          motivation?: string | null
+          onboarding_completed?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_onboarding_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_progress: {
         Row: {
           created_at: string
@@ -264,6 +323,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_subject_interests: {
+        Row: {
+          created_at: string | null
+          id: string
+          interest_category: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interest_category: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interest_category?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_subject_progress: {
         Row: {
