@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom } from "lucide-react";
+import WeeklyActivityChart from "@/components/WeeklyActivityChart";
+import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
 import type { User } from "@supabase/supabase-js";
 
 interface UserProgress {
@@ -256,6 +258,12 @@ const Dashboard = () => {
               Resets every Monday • Total: {userProgress.mastery_points} pts
             </p>
           </Card>
+        </div>
+
+        {/* Analytics Charts */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <WeeklyActivityChart userId={user.id} />
+          <SubjectBreakdownChart subjects={subjects} subjectProgress={subjectProgress} />
         </div>
 
         {/* Subjects */}
