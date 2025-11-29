@@ -14,23 +14,70 @@ export type Database = {
   }
   public: {
     Tables: {
+      cohort_subjects: {
+        Row: {
+          cohort_id: string
+          created_at: string | null
+          id: string
+          subject_id: string
+        }
+        Insert: {
+          cohort_id: string
+          created_at?: string | null
+          id?: string
+          subject_id: string
+        }
+        Update: {
+          cohort_id?: string
+          created_at?: string | null
+          id?: string
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cohort_subjects_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cohort_subjects_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cohorts: {
         Row: {
           created_at: string | null
           degree_name: string
           id: string
+          university_id: string | null
         }
         Insert: {
           created_at?: string | null
           degree_name: string
           id?: string
+          university_id?: string | null
         }
         Update: {
           created_at?: string | null
           degree_name?: string
           id?: string
+          university_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "cohorts_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       modules: {
         Row: {
@@ -166,6 +213,24 @@ export type Database = {
           created_at?: string
           description?: string | null
           icon?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      universities: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
           id?: string
           name?: string
         }

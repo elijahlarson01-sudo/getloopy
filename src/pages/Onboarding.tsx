@@ -23,10 +23,18 @@ const MOTIVATIONS = [{
   label: "Personal Interest",
   icon: "💡"
 }];
+
+interface University {
+  id: string;
+  name: string;
+}
+
 interface Cohort {
   id: string;
   degree_name: string;
+  university_id: string | null;
 }
+
 interface Subject {
   id: string;
   name: string;
@@ -39,7 +47,9 @@ const Onboarding = () => {
   const [motivation, setMotivation] = useState<string | null>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [isStudyingDegree, setIsStudyingDegree] = useState<boolean | null>(null);
+  const [selectedUniversity, setSelectedUniversity] = useState<string | null>(null);
   const [selectedCohort, setSelectedCohort] = useState<string | null>(null);
+  const [universities, setUniversities] = useState<University[]>([]);
   const [cohorts, setCohorts] = useState<Cohort[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
@@ -70,6 +80,17 @@ const Onboarding = () => {
           setMotivation(onboarding.motivation);
           setIsStudyingDegree(onboarding.is_studying_degree || false);
           setSelectedCohort(onboarding.cohort_id);
+          // Load university from cohort
+          if (onboarding.cohort_id) {
+            const { data: cohortData } = await supabase
+              .from("cohorts")
+              .select("university_id")
+              .eq("id", onboarding.cohort_id)
+              .maybeSingle();
+            if (cohortData?.university_id) {
+              setSelectedUniversity(cohortData.university_id);
+            }
+          }
         }
         const {
           data: interests
@@ -87,11 +108,9 @@ const Onboarding = () => {
         }
       }
     };
-    const fetchCohorts = async () => {
-      const {
-        data
-      } = await supabase.from("cohorts").select("*").order("degree_name");
-      if (data) setCohorts(data);
+    const fetchUniversities = async () => {
+      const { data } = await supabase.from("universities").select("*").order("name");
+      if (data) setUniversities(data);
     };
     const fetchSubjects = async () => {
       const {
@@ -100,9 +119,26 @@ const Onboarding = () => {
       if (data) setSubjects(data);
     };
     checkAuth();
-    fetchCohorts();
+    fetchUniversities();
     fetchSubjects();
   }, [navigate, isEditMode]);
+
+  // Fetch cohorts when university changes
+  useEffect(() => {
+    const fetchCohorts = async () => {
+      if (!selectedUniversity) {
+        setCohorts([]);
+        return;
+      }
+      const { data } = await supabase
+        .from("cohorts")
+        .select("*")
+        .eq("university_id", selectedUniversity)
+        .order("degree_name");
+      if (data) setCohorts(data);
+    };
+    fetchCohorts();
+  }, [selectedUniversity]);
   const toggleInterest = (id: string) => {
     setSelectedInterests(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
@@ -184,7 +220,7 @@ const Onboarding = () => {
       case 2:
         return selectedInterests.length > 0;
       case 3:
-        return isStudyingDegree !== null && (isStudyingDegree ? selectedCohort !== null : true);
+        return isStudyingDegree !== null && (isStudyingDegree ? (selectedUniversity !== null && selectedCohort !== null) : true);
       default:
         return true;
     }
@@ -253,7 +289,7 @@ const Onboarding = () => {
             </div>
           </div>}
 
-        {/* Step 3: Degree */}
+        {/* Step 3: Student Status & University/Degree */}
         {step === 3 && <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-bold text-foreground mb-2">Are you a current student?</h2>
@@ -264,28 +300,69 @@ const Onboarding = () => {
 
             <div className="flex gap-4 justify-center">
               <button onClick={() => {
-            setIsStudyingDegree(true);
-          }} className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === true ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
+                setIsStudyingDegree(true);
+              }} className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === true ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
                 Yes 🎓
               </button>
               <button onClick={() => {
-            setIsStudyingDegree(false);
-            setSelectedCohort(null);
-          }} className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === false ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
+                setIsStudyingDegree(false);
+                setSelectedUniversity(null);
+                setSelectedCohort(null);
+              }} className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === false ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
                 No
               </button>
             </div>
 
-            {isStudyingDegree && <div className="space-y-3 mt-4">
-                <p className="text-sm font-medium text-center text-foreground">
-                  Select your degree:
-                </p>
-                <div className="grid grid-cols-2 gap-2 max-h-[250px] overflow-y-auto">
-                  {cohorts.map(cohort => <button key={cohort.id} onClick={() => setSelectedCohort(cohort.id)} className={cn("p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium", selectedCohort === cohort.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
-                      {cohort.degree_name}
-                    </button>)}
+            {isStudyingDegree && (
+              <div className="space-y-4 mt-4">
+                {/* University Selection */}
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-center text-foreground">
+                    Select your university:
+                  </p>
+                  <div className="grid grid-cols-1 gap-2 max-h-[180px] overflow-y-auto">
+                    {universities.map(uni => (
+                      <button 
+                        key={uni.id} 
+                        onClick={() => {
+                          setSelectedUniversity(uni.id);
+                          setSelectedCohort(null);
+                        }} 
+                        className={cn(
+                          "p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium text-left",
+                          selectedUniversity === uni.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card"
+                        )}
+                      >
+                        {uni.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>}
+
+                {/* Degree Selection - only show after university selected */}
+                {selectedUniversity && cohorts.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-center text-foreground">
+                      Select your degree:
+                    </p>
+                    <div className="grid grid-cols-1 gap-2 max-h-[150px] overflow-y-auto">
+                      {cohorts.map(cohort => (
+                        <button 
+                          key={cohort.id} 
+                          onClick={() => setSelectedCohort(cohort.id)} 
+                          className={cn(
+                            "p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium text-left",
+                            selectedCohort === cohort.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card"
+                          )}
+                        >
+                          {cohort.degree_name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>}
 
         {/* Navigation */}
