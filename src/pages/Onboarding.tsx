@@ -45,6 +45,7 @@ interface Subject {
 const Onboarding = () => {
   const [searchParams] = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
+  const editStep = searchParams.get("step");
   const [step, setStep] = useState(1);
   const [motivation, setMotivation] = useState<string | null>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -88,6 +89,10 @@ const Onboarding = () => {
             if (cohortData?.university_id) {
               setSelectedUniversity(cohortData.university_id);
             }
+          }
+          // Jump to subjects step if requested
+          if (editStep === "subjects") {
+            setStep(onboarding.is_studying_degree ? 5 : 3);
           }
         }
         const { data: interests } = await supabase
