@@ -192,11 +192,11 @@ const Auth = () => {
             <form onSubmit={handleAuth} className="space-y-4">
               {mode === "signup" && (
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="displayName">Display Name</Label>
                   <Input
-                    id="firstName"
+                    id="displayName"
                     type="text"
-                    placeholder="Your first name"
+                    placeholder="How should we call you?"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     required
