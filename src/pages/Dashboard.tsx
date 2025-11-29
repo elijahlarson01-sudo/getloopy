@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap } from "lucide-react";
+import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 interface UserProgress {
@@ -42,6 +42,7 @@ const iconMap: Record<string, any> = {
   Calculator,
   Leaf,
   TrendingUp,
+  Atom,
 };
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -259,7 +260,18 @@ const Dashboard = () => {
 
         {/* Subjects */}
         <div className="mb-8">
-          <h3 className="text-2xl font-bold mb-4">Your Subjects</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-2xl font-bold">Your Subjects</h3>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/onboarding?edit=true")}
+              className="gap-2"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit Subjects
+            </Button>
+          </div>
           <div className="grid md:grid-cols-2 gap-4">
             {subjects.map(subject => {
             const IconComponent = iconMap[subject.icon] || Code;
