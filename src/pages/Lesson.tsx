@@ -201,8 +201,8 @@ const Lesson = () => {
               const yesterdayStr = yesterday.toISOString().split('T')[0];
               
               if (lastDateStr === todayStr) {
-                // Already practiced today, increment streak by 1 for each lesson
-                newStreak = currentProgress.current_streak + 1;
+                // Already practiced today, keep same streak
+                newStreak = currentProgress.current_streak;
               } else if (lastDateStr === yesterdayStr) {
                 // Practiced yesterday, increment streak
                 newStreak = currentProgress.current_streak + 1;
@@ -214,14 +214,29 @@ const Lesson = () => {
           }
 
           // Update user progress with new points and streak
-          await supabase.from("user_progress").upsert({
-            user_id: userId,
-            mastery_points: totalPoints + pointsEarned,
-            weekly_mastery_points: weeklyPoints + pointsEarned,
-            weekly_points_reset_date: currentWeekStart,
-            current_streak: newStreak,
-            last_practice_date: todayStr,
-          });
+          if (currentProgress) {
+            // Update existing record
+            await supabase
+              .from("user_progress")
+              .update({
+                mastery_points: totalPoints + pointsEarned,
+                weekly_mastery_points: weeklyPoints + pointsEarned,
+                weekly_points_reset_date: currentWeekStart,
+                current_streak: newStreak,
+                last_practice_date: todayStr,
+              })
+              .eq("user_id", userId);
+          } else {
+            // Insert new record
+            await supabase.from("user_progress").insert({
+              user_id: userId,
+              mastery_points: pointsEarned,
+              weekly_mastery_points: pointsEarned,
+              weekly_points_reset_date: currentWeekStart,
+              current_streak: newStreak,
+              last_practice_date: todayStr,
+            });
+          }
 
           // Update module progress
           await supabase.from("user_module_progress").upsert({
