@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Flame, ChevronRight, ChevronLeft, Check, Sparkles } from "lucide-react";
+import { Flame, ChevronRight, ChevronLeft, Check, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MOTIVATIONS = [
@@ -26,6 +26,9 @@ interface Subject {
 }
 
 const Onboarding = () => {
+  const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get("edit") === "true";
+  
   const [step, setStep] = useState(1);
   const [motivation, setMotivation] = useState<string | null>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -48,15 +51,39 @@ const Onboarding = () => {
       }
       setUserId(session.user.id);
 
-      // Check if already completed onboarding
-      const { data: onboarding } = await supabase
-        .from("user_onboarding")
-        .select("onboarding_completed")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
+      // In edit mode, load existing preferences
+      if (isEditMode) {
+        const { data: onboarding } = await supabase
+          .from("user_onboarding")
+          .select("*")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
 
-      if (onboarding?.onboarding_completed) {
-        navigate("/dashboard");
+        if (onboarding) {
+          setMotivation(onboarding.motivation);
+          setIsStudyingDegree(onboarding.is_studying_degree || false);
+          setSelectedCohort(onboarding.cohort_id);
+        }
+
+        const { data: interests } = await supabase
+          .from("user_subject_interests")
+          .select("interest_category")
+          .eq("user_id", session.user.id);
+
+        if (interests) {
+          setSelectedInterests(interests.map((i) => i.interest_category));
+        }
+      } else {
+        // Check if already completed onboarding
+        const { data: onboarding } = await supabase
+          .from("user_onboarding")
+          .select("onboarding_completed")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+
+        if (onboarding?.onboarding_completed) {
+          navigate("/dashboard");
+        }
       }
     };
 
@@ -79,7 +106,7 @@ const Onboarding = () => {
     checkAuth();
     fetchCohorts();
     fetchSubjects();
-  }, [navigate]);
+  }, [navigate, isEditMode]);
 
   const toggleInterest = (id: string) => {
     setSelectedInterests((prev) =>
@@ -92,37 +119,75 @@ const Onboarding = () => {
     setLoading(true);
 
     try {
-      // Insert onboarding data
-      const { error: onboardingError } = await supabase
-        .from("user_onboarding")
-        .insert({
-          user_id: userId,
-          motivation,
-          is_studying_degree: isStudyingDegree || false,
-          cohort_id: selectedCohort,
-          onboarding_completed: true,
-        });
+      if (isEditMode) {
+        // Update existing onboarding data
+        const { error: onboardingError } = await supabase
+          .from("user_onboarding")
+          .update({
+            motivation,
+            is_studying_degree: isStudyingDegree || false,
+            cohort_id: selectedCohort,
+          })
+          .eq("user_id", userId);
 
-      if (onboardingError) throw onboardingError;
+        if (onboardingError) throw onboardingError;
 
-      // Insert subject interests
-      if (selectedInterests.length > 0) {
-        const interestsToInsert = selectedInterests.map((interest) => ({
-          user_id: userId,
-          interest_category: interest,
-        }));
-
-        const { error: interestsError } = await supabase
+        // Delete existing interests and insert new ones
+        await supabase
           .from("user_subject_interests")
-          .insert(interestsToInsert);
+          .delete()
+          .eq("user_id", userId);
 
-        if (interestsError) throw interestsError;
+        if (selectedInterests.length > 0) {
+          const interestsToInsert = selectedInterests.map((interest) => ({
+            user_id: userId,
+            interest_category: interest,
+          }));
+
+          const { error: interestsError } = await supabase
+            .from("user_subject_interests")
+            .insert(interestsToInsert);
+
+          if (interestsError) throw interestsError;
+        }
+
+        toast({
+          title: "Preferences Updated",
+          description: "Your learning preferences have been saved.",
+        });
+      } else {
+        // Insert onboarding data
+        const { error: onboardingError } = await supabase
+          .from("user_onboarding")
+          .insert({
+            user_id: userId,
+            motivation,
+            is_studying_degree: isStudyingDegree || false,
+            cohort_id: selectedCohort,
+            onboarding_completed: true,
+          });
+
+        if (onboardingError) throw onboardingError;
+
+        // Insert subject interests
+        if (selectedInterests.length > 0) {
+          const interestsToInsert = selectedInterests.map((interest) => ({
+            user_id: userId,
+            interest_category: interest,
+          }));
+
+          const { error: interestsError } = await supabase
+            .from("user_subject_interests")
+            .insert(interestsToInsert);
+
+          if (interestsError) throw interestsError;
+        }
+
+        toast({
+          title: "Welcome to Loop! 🎉",
+          description: "Your learning journey begins now.",
+        });
       }
-
-      toast({
-        title: "Welcome to Loop! 🎉",
-        description: "Your learning journey begins now.",
-      });
       navigate("/dashboard");
     } catch (error: any) {
       toast({
@@ -158,11 +223,21 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center px-4 py-8">
-      <Card className="w-full max-w-2xl p-8 bg-card/50 backdrop-blur border-2">
+      <Card className="w-full max-w-2xl p-8 bg-card/50 backdrop-blur border-2 relative">
+        {isEditMode && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-4 right-4"
+            onClick={() => navigate("/dashboard")}
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        )}
         <div className="flex flex-col items-center mb-8">
           <Flame className="w-10 h-10 text-accent mb-3" />
           <h1 className="text-2xl font-black bg-gradient-to-r from-primary via-primary-light to-accent bg-clip-text text-transparent">
-            Welcome to Loop
+            {isEditMode ? "Edit Preferences" : "Welcome to Loop"}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
             Let's personalize your experience
@@ -349,7 +424,7 @@ const Onboarding = () => {
               disabled={!canProceed() || loading}
               className="gap-2"
             >
-              {loading ? "Saving..." : "Get Started"}
+              {loading ? "Saving..." : isEditMode ? "Save Changes" : "Get Started"}
               <Sparkles className="w-4 h-4" />
             </Button>
           )}

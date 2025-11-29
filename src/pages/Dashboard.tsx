@@ -5,8 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
+
 interface UserProgress {
   current_streak: number;
   mastery_points: number;
@@ -28,7 +36,12 @@ const iconMap: Record<string, any> = {
   Database,
   BarChart3,
   Code,
-  Globe
+  Globe,
+  BookOpen,
+  Palette,
+  Calculator,
+  Leaf,
+  TrendingUp,
 };
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -159,10 +172,24 @@ const Dashboard = () => {
           <h1 className="text-2xl font-black bg-gradient-to-r from-primary via-primary-light to-accent bg-clip-text text-transparent">
             Loop
           </h1>
-          <Button variant="ghost" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="w-5 h-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => navigate("/onboarding?edit=true")}>
+                <Settings className="w-4 h-4 mr-2" />
+                Edit Preferences
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
