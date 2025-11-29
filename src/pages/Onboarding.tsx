@@ -213,6 +213,8 @@ const Onboarding = () => {
       setLoading(false);
     }
   };
+  const totalSteps = isStudyingDegree ? 5 : 3;
+  
   const canProceed = () => {
     switch (step) {
       case 1:
@@ -220,17 +222,30 @@ const Onboarding = () => {
       case 2:
         return selectedInterests.length > 0;
       case 3:
-        return isStudyingDegree !== null && (isStudyingDegree ? (selectedUniversity !== null && selectedCohort !== null) : true);
+        return isStudyingDegree !== null;
+      case 4:
+        return selectedUniversity !== null;
+      case 5:
+        return selectedCohort !== null;
       default:
         return true;
     }
   };
+  
   const nextStep = () => {
-    if (step < 3) setStep(step + 1);
+    if (isStudyingDegree === false && step === 3) {
+      // Skip to completion if not a student
+      handleComplete();
+    } else if (step < totalSteps) {
+      setStep(step + 1);
+    }
   };
+  
   const prevStep = () => {
     if (step > 1) setStep(step - 1);
   };
+  
+  const isLastStep = isStudyingDegree ? step === 5 : step === 3;
   return <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center px-4 py-8">
       <Card className="w-full max-w-2xl p-8 bg-card/50 backdrop-blur border-2 relative">
         {isEditMode && <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => navigate("/dashboard")}>
@@ -248,7 +263,7 @@ const Onboarding = () => {
 
         {/* Progress indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          {[1, 2, 3].map(s => <div key={s} className={cn("w-3 h-3 rounded-full transition-all duration-300", s === step ? "bg-primary w-8" : s < step ? "bg-primary" : "bg-muted")} />)}
+          {Array.from({ length: totalSteps }, (_, i) => i + 1).map(s => <div key={s} className={cn("w-3 h-3 rounded-full transition-all duration-300", s === step ? "bg-primary w-8" : s < step ? "bg-primary" : "bg-muted")} />)}
         </div>
 
         {/* Step 1: Motivation */}
@@ -289,7 +304,7 @@ const Onboarding = () => {
             </div>
           </div>}
 
-        {/* Step 3: Student Status & University/Degree */}
+        {/* Step 3: Student Status */}
         {step === 3 && <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-bold text-foreground mb-2">Are you a current student?</h2>
@@ -299,9 +314,7 @@ const Onboarding = () => {
             </div>
 
             <div className="flex gap-4 justify-center">
-              <button onClick={() => {
-                setIsStudyingDegree(true);
-              }} className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === true ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
+              <button onClick={() => setIsStudyingDegree(true)} className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === true ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
                 Yes 🎓
               </button>
               <button onClick={() => {
@@ -312,57 +325,59 @@ const Onboarding = () => {
                 No
               </button>
             </div>
+          </div>}
 
-            {isStudyingDegree && (
-              <div className="space-y-4 mt-4">
-                {/* University Selection */}
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-center text-foreground">
-                    Select your university:
-                  </p>
-                  <div className="grid grid-cols-1 gap-2 max-h-[180px] overflow-y-auto">
-                    {universities.map(uni => (
-                      <button 
-                        key={uni.id} 
-                        onClick={() => {
-                          setSelectedUniversity(uni.id);
-                          setSelectedCohort(null);
-                        }} 
-                        className={cn(
-                          "p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium text-left",
-                          selectedUniversity === uni.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card"
-                        )}
-                      >
-                        {uni.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+        {/* Step 4: University Selection */}
+        {step === 4 && <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-xl font-bold text-foreground mb-2">Select your university</h2>
+              <p className="text-muted-foreground text-sm">
+                Find your school to join your cohort
+              </p>
+            </div>
 
-                {/* Degree Selection - only show after university selected */}
-                {selectedUniversity && cohorts.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-center text-foreground">
-                      Select your degree:
-                    </p>
-                    <div className="grid grid-cols-1 gap-2 max-h-[150px] overflow-y-auto">
-                      {cohorts.map(cohort => (
-                        <button 
-                          key={cohort.id} 
-                          onClick={() => setSelectedCohort(cohort.id)} 
-                          className={cn(
-                            "p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium text-left",
-                            selectedCohort === cohort.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card"
-                          )}
-                        >
-                          {cohort.degree_name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto">
+              {universities.map(uni => (
+                <button 
+                  key={uni.id} 
+                  onClick={() => {
+                    setSelectedUniversity(uni.id);
+                    setSelectedCohort(null);
+                  }} 
+                  className={cn(
+                    "p-4 rounded-xl border-2 transition-all duration-200 font-medium text-left",
+                    selectedUniversity === uni.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card"
+                  )}
+                >
+                  {uni.name}
+                </button>
+              ))}
+            </div>
+          </div>}
+
+        {/* Step 5: Degree Selection */}
+        {step === 5 && <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-xl font-bold text-foreground mb-2">Select your degree</h2>
+              <p className="text-muted-foreground text-sm">
+                Choose your program to see relevant content
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto">
+              {cohorts.map(cohort => (
+                <button 
+                  key={cohort.id} 
+                  onClick={() => setSelectedCohort(cohort.id)} 
+                  className={cn(
+                    "p-4 rounded-xl border-2 transition-all duration-200 font-medium text-left",
+                    selectedCohort === cohort.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card"
+                  )}
+                >
+                  {cohort.degree_name}
+                </button>
+              ))}
+            </div>
           </div>}
 
         {/* Navigation */}
@@ -372,9 +387,9 @@ const Onboarding = () => {
             Back
           </Button>
 
-          {step < 3 ? <Button variant="gradient" onClick={nextStep} disabled={!canProceed()} className="gap-2">
-              Next
-              <ChevronRight className="w-4 h-4" />
+          {!isLastStep ? <Button variant="gradient" onClick={nextStep} disabled={!canProceed()} className="gap-2">
+              {isStudyingDegree === false && step === 3 ? (loading ? "Saving..." : "Get Started") : "Next"}
+              {isStudyingDegree === false && step === 3 ? <Sparkles className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
             </Button> : <Button variant="gradient" onClick={handleComplete} disabled={!canProceed() || loading} className="gap-2">
               {loading ? "Saving..." : isEditMode ? "Save Changes" : "Get Started"}
               <Sparkles className="w-4 h-4" />
