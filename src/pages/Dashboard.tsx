@@ -154,7 +154,10 @@ const Dashboard = () => {
       <main className="container max-w-6xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Welcome back!</h2>
-          <p className="text-muted-foreground">What took you so long?!                    </p>
+          <p className="text-muted-foreground">What took you so long?! 
+
+
+Click a few subjects below to test your skills & happy learning!  - Eli            </p>
         </div>
 
         {/* Stats Cards */}
