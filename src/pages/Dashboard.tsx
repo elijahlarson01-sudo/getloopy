@@ -50,6 +50,19 @@ const Dashboard = () => {
         navigate("/auth");
         return;
       }
+
+      // Check if onboarding completed
+      const { data: onboarding } = await supabase
+        .from("user_onboarding")
+        .select("onboarding_completed")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (!onboarding?.onboarding_completed) {
+        navigate("/onboarding");
+        return;
+      }
+
       setUser(session.user);
       await fetchUserData(session.user.id);
     };
