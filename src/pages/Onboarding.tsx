@@ -6,29 +6,35 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Flame, ChevronRight, ChevronLeft, Check, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const MOTIVATIONS = [
-  { id: "quick-learning", label: "Quick Learning", icon: "⚡" },
-  { id: "degree-support", label: "Degree Support", icon: "🎓" },
-  { id: "career-advancement", label: "Career Advancement", icon: "📈" },
-  { id: "personal-interest", label: "Personal Interest", icon: "💡" },
-];
-
+const MOTIVATIONS = [{
+  id: "quick-learning",
+  label: "Quick Learning",
+  icon: "⚡"
+}, {
+  id: "degree-support",
+  label: "Degree Support",
+  icon: "🎓"
+}, {
+  id: "career-advancement",
+  label: "Career Advancement",
+  icon: "📈"
+}, {
+  id: "personal-interest",
+  label: "Personal Interest",
+  icon: "💡"
+}];
 interface Cohort {
   id: string;
   degree_name: string;
 }
-
 interface Subject {
   id: string;
   name: string;
   icon: string;
 }
-
 const Onboarding = () => {
   const [searchParams] = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
-  
   const [step, setStep] = useState(1);
   const [motivation, setMotivation] = useState<string | null>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -38,13 +44,17 @@ const Onboarding = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  
   const navigate = useNavigate();
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       if (!session) {
         navigate("/auth");
         return;
@@ -53,139 +63,107 @@ const Onboarding = () => {
 
       // In edit mode, load existing preferences
       if (isEditMode) {
-        const { data: onboarding } = await supabase
-          .from("user_onboarding")
-          .select("*")
-          .eq("user_id", session.user.id)
-          .maybeSingle();
-
+        const {
+          data: onboarding
+        } = await supabase.from("user_onboarding").select("*").eq("user_id", session.user.id).maybeSingle();
         if (onboarding) {
           setMotivation(onboarding.motivation);
           setIsStudyingDegree(onboarding.is_studying_degree || false);
           setSelectedCohort(onboarding.cohort_id);
         }
-
-        const { data: interests } = await supabase
-          .from("user_subject_interests")
-          .select("interest_category")
-          .eq("user_id", session.user.id);
-
+        const {
+          data: interests
+        } = await supabase.from("user_subject_interests").select("interest_category").eq("user_id", session.user.id);
         if (interests) {
-          setSelectedInterests(interests.map((i) => i.interest_category));
+          setSelectedInterests(interests.map(i => i.interest_category));
         }
       } else {
         // Check if already completed onboarding
-        const { data: onboarding } = await supabase
-          .from("user_onboarding")
-          .select("onboarding_completed")
-          .eq("user_id", session.user.id)
-          .maybeSingle();
-
+        const {
+          data: onboarding
+        } = await supabase.from("user_onboarding").select("onboarding_completed").eq("user_id", session.user.id).maybeSingle();
         if (onboarding?.onboarding_completed) {
           navigate("/dashboard");
         }
       }
     };
-
     const fetchCohorts = async () => {
-      const { data } = await supabase
-        .from("cohorts")
-        .select("*")
-        .order("degree_name");
+      const {
+        data
+      } = await supabase.from("cohorts").select("*").order("degree_name");
       if (data) setCohorts(data);
     };
-
     const fetchSubjects = async () => {
-      const { data } = await supabase
-        .from("subjects")
-        .select("id, name, icon")
-        .order("name");
+      const {
+        data
+      } = await supabase.from("subjects").select("id, name, icon").order("name");
       if (data) setSubjects(data);
     };
-
     checkAuth();
     fetchCohorts();
     fetchSubjects();
   }, [navigate, isEditMode]);
-
   const toggleInterest = (id: string) => {
-    setSelectedInterests((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSelectedInterests(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
-
   const handleComplete = async () => {
     if (!userId) return;
     setLoading(true);
-
     try {
       if (isEditMode) {
         // Update existing onboarding data
-        const { error: onboardingError } = await supabase
-          .from("user_onboarding")
-          .update({
-            motivation,
-            is_studying_degree: isStudyingDegree || false,
-            cohort_id: selectedCohort,
-          })
-          .eq("user_id", userId);
-
+        const {
+          error: onboardingError
+        } = await supabase.from("user_onboarding").update({
+          motivation,
+          is_studying_degree: isStudyingDegree || false,
+          cohort_id: selectedCohort
+        }).eq("user_id", userId);
         if (onboardingError) throw onboardingError;
 
         // Delete existing interests and insert new ones
-        await supabase
-          .from("user_subject_interests")
-          .delete()
-          .eq("user_id", userId);
-
+        await supabase.from("user_subject_interests").delete().eq("user_id", userId);
         if (selectedInterests.length > 0) {
-          const interestsToInsert = selectedInterests.map((interest) => ({
+          const interestsToInsert = selectedInterests.map(interest => ({
             user_id: userId,
-            interest_category: interest,
+            interest_category: interest
           }));
-
-          const { error: interestsError } = await supabase
-            .from("user_subject_interests")
-            .insert(interestsToInsert);
-
+          const {
+            error: interestsError
+          } = await supabase.from("user_subject_interests").insert(interestsToInsert);
           if (interestsError) throw interestsError;
         }
-
         toast({
           title: "Preferences Updated",
-          description: "Your learning preferences have been saved.",
+          description: "Your learning preferences have been saved."
         });
       } else {
         // Insert onboarding data
-        const { error: onboardingError } = await supabase
-          .from("user_onboarding")
-          .insert({
-            user_id: userId,
-            motivation,
-            is_studying_degree: isStudyingDegree || false,
-            cohort_id: selectedCohort,
-            onboarding_completed: true,
-          });
-
+        const {
+          error: onboardingError
+        } = await supabase.from("user_onboarding").insert({
+          user_id: userId,
+          motivation,
+          is_studying_degree: isStudyingDegree || false,
+          cohort_id: selectedCohort,
+          onboarding_completed: true
+        });
         if (onboardingError) throw onboardingError;
 
         // Insert subject interests
         if (selectedInterests.length > 0) {
-          const interestsToInsert = selectedInterests.map((interest) => ({
+          const interestsToInsert = selectedInterests.map(interest => ({
             user_id: userId,
-            interest_category: interest,
+            interest_category: interest
           }));
-
-          const { error: interestsError } = await supabase
-            .from("user_subject_interests")
-            .insert(interestsToInsert);
-
+          const {
+            error: interestsError
+          } = await supabase.from("user_subject_interests").insert(interestsToInsert);
           if (interestsError) throw interestsError;
         }
-
         toast({
           title: "Welcome to Loop! 🎉",
-          description: "Your learning journey begins now.",
+          description: "Your learning journey begins now."
         });
       }
       navigate("/dashboard");
@@ -193,13 +171,12 @@ const Onboarding = () => {
       toast({
         title: "Error",
         description: error.message,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
   };
-
   const canProceed = () => {
     switch (step) {
       case 1:
@@ -212,28 +189,17 @@ const Onboarding = () => {
         return true;
     }
   };
-
   const nextStep = () => {
     if (step < 3) setStep(step + 1);
   };
-
   const prevStep = () => {
     if (step > 1) setStep(step - 1);
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center px-4 py-8">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center px-4 py-8">
       <Card className="w-full max-w-2xl p-8 bg-card/50 backdrop-blur border-2 relative">
-        {isEditMode && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4"
-            onClick={() => navigate("/dashboard")}
-          >
+        {isEditMode && <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => navigate("/dashboard")}>
             <X className="w-4 h-4" />
-          </Button>
-        )}
+          </Button>}
         <div className="flex flex-col items-center mb-8">
           <Flame className="w-10 h-10 text-accent mb-3" />
           <h1 className="text-2xl font-black bg-gradient-to-r from-primary via-primary-light to-accent bg-clip-text text-transparent">
@@ -246,24 +212,11 @@ const Onboarding = () => {
 
         {/* Progress indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className={cn(
-                "w-3 h-3 rounded-full transition-all duration-300",
-                s === step
-                  ? "bg-primary w-8"
-                  : s < step
-                  ? "bg-primary"
-                  : "bg-muted"
-              )}
-            />
-          ))}
+          {[1, 2, 3].map(s => <div key={s} className={cn("w-3 h-3 rounded-full transition-all duration-300", s === step ? "bg-primary w-8" : s < step ? "bg-primary" : "bg-muted")} />)}
         </div>
 
         {/* Step 1: Motivation */}
-        {step === 1 && (
-          <div className="space-y-6">
+        {step === 1 && <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-bold text-foreground mb-2">
                 Why are you on Loop?
@@ -274,28 +227,15 @@ const Onboarding = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {MOTIVATIONS.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => setMotivation(m.id)}
-                  className={cn(
-                    "p-4 rounded-xl border-2 transition-all duration-200 text-left",
-                    motivation === m.id
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/50 bg-card"
-                  )}
-                >
+              {MOTIVATIONS.map(m => <button key={m.id} onClick={() => setMotivation(m.id)} className={cn("p-4 rounded-xl border-2 transition-all duration-200 text-left", motivation === m.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
                   <span className="text-2xl mb-2 block">{m.icon}</span>
                   <span className="font-medium text-sm">{m.label}</span>
-                </button>
-              ))}
+                </button>)}
             </div>
-          </div>
-        )}
+          </div>}
 
         {/* Step 2: Interests */}
-        {step === 2 && (
-          <div className="space-y-6">
+        {step === 2 && <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-bold text-foreground mb-2">
                 What subjects interest you?
@@ -306,132 +246,64 @@ const Onboarding = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
-              {subjects.map((subject) => (
-                <button
-                  key={subject.id}
-                  onClick={() => toggleInterest(subject.id)}
-                  className={cn(
-                    "p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3",
-                    selectedInterests.includes(subject.id)
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/50 bg-card"
-                  )}
-                >
+              {subjects.map(subject => <button key={subject.id} onClick={() => toggleInterest(subject.id)} className={cn("p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3", selectedInterests.includes(subject.id) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
                   <span className="font-medium text-sm flex-1">{subject.name}</span>
-                  {selectedInterests.includes(subject.id) && (
-                    <Check className="w-4 h-4 text-primary" />
-                  )}
-                </button>
-              ))}
+                  {selectedInterests.includes(subject.id) && <Check className="w-4 h-4 text-primary" />}
+                </button>)}
             </div>
-          </div>
-        )}
+          </div>}
 
         {/* Step 3: Degree */}
-        {step === 3 && (
-          <div className="space-y-6">
+        {step === 3 && <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-bold text-foreground mb-2">
-                Are you studying a degree?
-              </h2>
+              <h2 className="text-xl font-bold text-foreground mb-2">Are you a current student?</h2>
               <p className="text-muted-foreground text-sm">
                 Join a cohort to compete with classmates
               </p>
             </div>
 
             <div className="flex gap-4 justify-center">
-              <button
-                onClick={() => {
-                  setIsStudyingDegree(true);
-                }}
-                className={cn(
-                  "px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium",
-                  isStudyingDegree === true
-                    ? "border-primary bg-primary/10"
-                    : "border-border hover:border-primary/50 bg-card"
-                )}
-              >
+              <button onClick={() => {
+            setIsStudyingDegree(true);
+          }} className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === true ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
                 Yes 🎓
               </button>
-              <button
-                onClick={() => {
-                  setIsStudyingDegree(false);
-                  setSelectedCohort(null);
-                }}
-                className={cn(
-                  "px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium",
-                  isStudyingDegree === false
-                    ? "border-primary bg-primary/10"
-                    : "border-border hover:border-primary/50 bg-card"
-                )}
-              >
+              <button onClick={() => {
+            setIsStudyingDegree(false);
+            setSelectedCohort(null);
+          }} className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === false ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
                 No
               </button>
             </div>
 
-            {isStudyingDegree && (
-              <div className="space-y-3 mt-4">
+            {isStudyingDegree && <div className="space-y-3 mt-4">
                 <p className="text-sm font-medium text-center text-foreground">
                   Select your degree:
                 </p>
                 <div className="grid grid-cols-2 gap-2 max-h-[250px] overflow-y-auto">
-                  {cohorts.map((cohort) => (
-                    <button
-                      key={cohort.id}
-                      onClick={() => setSelectedCohort(cohort.id)}
-                      className={cn(
-                        "p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium",
-                        selectedCohort === cohort.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/50 bg-card"
-                      )}
-                    >
+                  {cohorts.map(cohort => <button key={cohort.id} onClick={() => setSelectedCohort(cohort.id)} className={cn("p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium", selectedCohort === cohort.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}>
                       {cohort.degree_name}
-                    </button>
-                  ))}
+                    </button>)}
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              </div>}
+          </div>}
 
         {/* Navigation */}
         <div className="flex justify-between mt-8">
-          <Button
-            variant="ghost"
-            onClick={prevStep}
-            disabled={step === 1}
-            className="gap-2"
-          >
+          <Button variant="ghost" onClick={prevStep} disabled={step === 1} className="gap-2">
             <ChevronLeft className="w-4 h-4" />
             Back
           </Button>
 
-          {step < 3 ? (
-            <Button
-              variant="gradient"
-              onClick={nextStep}
-              disabled={!canProceed()}
-              className="gap-2"
-            >
+          {step < 3 ? <Button variant="gradient" onClick={nextStep} disabled={!canProceed()} className="gap-2">
               Next
               <ChevronRight className="w-4 h-4" />
-            </Button>
-          ) : (
-            <Button
-              variant="gradient"
-              onClick={handleComplete}
-              disabled={!canProceed() || loading}
-              className="gap-2"
-            >
+            </Button> : <Button variant="gradient" onClick={handleComplete} disabled={!canProceed() || loading} className="gap-2">
               {loading ? "Saving..." : isEditMode ? "Save Changes" : "Get Started"}
               <Sparkles className="w-4 h-4" />
-            </Button>
-          )}
+            </Button>}
         </div>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default Onboarding;
