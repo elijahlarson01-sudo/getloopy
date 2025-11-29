@@ -210,13 +210,13 @@ const Onboarding = () => {
       } else {
         const { error: onboardingError } = await supabase
           .from("user_onboarding")
-          .insert({
+          .upsert({
             user_id: userId,
             motivation,
             is_studying_degree: isStudyingDegree || false,
             cohort_id: selectedCohort,
             onboarding_completed: true
-          });
+          }, { onConflict: 'user_id' });
         if (onboardingError) throw onboardingError;
 
         if (selectedInterests.length > 0) {
