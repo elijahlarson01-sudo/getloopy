@@ -148,20 +148,22 @@ const Lesson = () => {
         const accuracy = Math.round((correctCount / questions.length) * 100);
         
         if (accuracy >= 80) {
-          // Calculate mastery points: 10 points per percentage (88% = 8.8 points)
-          const pointsEarned = accuracy * 0.1;
+          // Points earned = accuracy percentage (90% = 90 points, 100% = 100 points)
+          const pointsEarned = accuracy;
 
           // Fetch current user progress
           const { data: currentProgress } = await supabase
             .from("user_progress")
             .select("*")
             .eq("user_id", userId)
-            .single();
+            .maybeSingle();
 
           let newStreak = 1;
+          let currentPoints = 0;
           const today = new Date().toISOString().split('T')[0];
 
           if (currentProgress) {
+            currentPoints = currentProgress.mastery_points || 0;
             const lastPracticeDate = currentProgress.last_practice_date;
             
             if (lastPracticeDate) {
@@ -174,25 +176,22 @@ const Lesson = () => {
               const yesterdayStr = yesterday.toISOString().split('T')[0];
               
               if (lastDateStr === today) {
-                // Already practiced today, keep current streak
                 newStreak = currentProgress.current_streak;
               } else if (lastDateStr === yesterdayStr) {
-                // Practiced yesterday, increment streak
                 newStreak = currentProgress.current_streak + 1;
               } else {
-                // Streak broken, reset to 1
                 newStreak = 1;
               }
             }
-
-            // Update user progress with new points and streak
-            await supabase.from("user_progress").upsert({
-              user_id: userId,
-              mastery_points: currentProgress.mastery_points + pointsEarned,
-              current_streak: newStreak,
-              last_practice_date: today,
-            });
           }
+
+          // Update user progress with new points and streak
+          await supabase.from("user_progress").upsert({
+            user_id: userId,
+            mastery_points: currentPoints + pointsEarned,
+            current_streak: newStreak,
+            last_practice_date: today,
+          });
 
           // Update module progress
           await supabase.from("user_module_progress").upsert({
@@ -205,7 +204,7 @@ const Lesson = () => {
 
           toast({
             title: "Module Complete! 🎉",
-            description: `You scored ${accuracy}% and earned ${pointsEarned.toFixed(1)} mastery points!`,
+            description: `You scored ${accuracy}% and earned ${pointsEarned} mastery points!`,
           });
 
           navigate(`/subject/${module.subject_id}`);
