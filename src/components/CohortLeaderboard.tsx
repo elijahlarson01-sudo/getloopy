@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Users, Trophy, Medal } from "lucide-react";
+import { Users, Trophy, Medal, Star } from "lucide-react";
 
 interface CohortMember {
   user_id: string;
@@ -23,7 +23,6 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
 
   useEffect(() => {
     const fetchCohortMembers = async () => {
-      // Get user's cohort
       const { data: userOnboarding } = await supabase
         .from("user_onboarding")
         .select("cohort_id")
@@ -35,7 +34,6 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
         return;
       }
 
-      // Get cohort name
       const { data: cohort } = await supabase
         .from("cohorts")
         .select("degree_name")
@@ -46,7 +44,6 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
         setCohortName(cohort.degree_name);
       }
 
-      // Get all users in the same cohort with their progress
       const { data: cohortUsers } = await supabase
         .from("user_onboarding")
         .select("user_id")
@@ -59,19 +56,16 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
 
       const userIds = cohortUsers.map(u => u.user_id);
 
-      // Get progress for these users
       const { data: progressData } = await supabase
         .from("user_progress")
         .select("user_id, weekly_mastery_points, mastery_points")
         .in("user_id", userIds);
 
-      // Try to get profiles (may be empty due to RLS or missing data)
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, email, full_name")
         .in("id", userIds);
 
-      // Combine data - create entries for all users even without profiles
       const membersWithProgress: CohortMember[] = userIds.map((uid, index) => {
         const profile = profiles?.find(p => p.id === uid);
         const progress = progressData?.find(p => p.user_id === uid);
@@ -84,7 +78,6 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
         };
       });
 
-      // Sort by weekly points
       membersWithProgress.sort((a, b) => b.weekly_mastery_points - a.weekly_mastery_points);
       setMembers(membersWithProgress);
       setLoading(false);
@@ -95,11 +88,11 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
 
   if (loading) {
     return (
-      <Card className="p-6">
+      <Card className="p-6 bg-pink">
         <div className="animate-pulse space-y-3">
-          <div className="h-5 bg-muted rounded w-1/3"></div>
-          <div className="h-4 bg-muted rounded w-full"></div>
-          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-5 bg-pink-foreground/20 w-1/3"></div>
+          <div className="h-4 bg-pink-foreground/20 w-full"></div>
+          <div className="h-4 bg-pink-foreground/20 w-full"></div>
         </div>
       </Card>
     );
@@ -110,42 +103,46 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
   }
 
   const getRankIcon = (index: number) => {
-    if (index === 0) return <Trophy className="w-4 h-4 text-yellow-500" />;
-    if (index === 1) return <Medal className="w-4 h-4 text-gray-400" />;
-    if (index === 2) return <Medal className="w-4 h-4 text-amber-600" />;
-    return <span className="w-4 h-4 text-xs text-muted-foreground flex items-center justify-center">{index + 1}</span>;
+    if (index === 0) return <Trophy className="w-5 h-5 text-secondary" />;
+    if (index === 1) return <Medal className="w-5 h-5 text-muted-foreground" />;
+    if (index === 2) return <Medal className="w-5 h-5 text-orange" />;
+    return <span className="w-5 h-5 text-sm font-bold flex items-center justify-center">{index + 1}</span>;
   };
 
   return (
-    <Card className="p-6 border-2 border-accent/20">
-      <div className="flex items-center gap-2 mb-4">
-        <Users className="w-5 h-5 text-accent" />
-        <h3 className="font-bold text-lg">Your Cohort</h3>
+    <Card className="p-6 bg-pink">
+      <div className="flex items-center gap-2 mb-2">
+        <Users className="w-5 h-5 text-pink-foreground" />
+        <h3 className="font-display text-xl text-pink-foreground">Your Cohort</h3>
       </div>
       {cohortName && (
-        <p className="text-sm text-muted-foreground mb-4">{cohortName}</p>
+        <p className="text-sm font-bold text-pink-foreground/80 uppercase mb-4">{cohortName}</p>
       )}
       <ScrollArea className="h-[200px]">
         <div className="space-y-2">
           {members.map((member, index) => (
             <div
               key={member.user_id}
-              className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
-                member.user_id === userId ? "bg-primary/10 border border-primary/30" : "hover:bg-muted/50"
+              className={`flex items-center gap-3 p-3 border-4 border-foreground transition-all ${
+                member.user_id === userId 
+                  ? "bg-secondary shadow-pop-sm" 
+                  : "bg-card hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-pop-sm"
               }`}
             >
               <div className="flex-shrink-0 w-6 flex justify-center">
                 {getRankIcon(index)}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
+                <p className="text-sm font-bold truncate text-foreground">
                   {member.full_name || member.email.split("@")[0]}
-                  {member.user_id === userId && <span className="text-primary ml-1">(You)</span>}
+                  {member.user_id === userId && (
+                    <Star className="inline w-4 h-4 ml-1 text-secondary fill-secondary" />
+                  )}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-primary">{member.weekly_mastery_points}</p>
-                <p className="text-xs text-muted-foreground">pts/wk</p>
+                <p className="text-sm font-black text-primary">{member.weekly_mastery_points}</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase">pts/wk</p>
               </div>
             </div>
           ))}

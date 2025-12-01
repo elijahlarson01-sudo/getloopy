@@ -483,12 +483,12 @@ const Onboarding = () => {
           </Button>
 
           {!isLastStep ? (
-            <Button variant="gradient" onClick={nextStep} disabled={!canProceed()} className="gap-2">
+            <Button variant="default" onClick={nextStep} disabled={!canProceed()} className="gap-2">
               Next
               <ChevronRight className="w-4 h-4" />
             </Button>
           ) : (
-            <Button variant="gradient" onClick={handleComplete} disabled={!canProceed() || loading} className="gap-2">
+            <Button variant="default" onClick={handleComplete} disabled={!canProceed() || loading} className="gap-2">
               {loading ? "Saving..." : isEditMode ? "Save Changes" : "Get Started"}
               <Sparkles className="w-4 h-4" />
             </Button>
