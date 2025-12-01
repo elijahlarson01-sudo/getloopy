@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
+import { Zap } from "lucide-react";
 
 interface DailyActivity {
   day: string;
@@ -44,7 +45,6 @@ const WeeklyActivityChart = ({ userId }: WeeklyActivityChartProps) => {
         return;
       }
 
-      // Initialize all 7 days
       const dailyData: Record<string, DailyActivity> = {};
       for (let i = 6; i >= 0; i--) {
         const date = subDays(today, i);
@@ -56,7 +56,6 @@ const WeeklyActivityChart = ({ userId }: WeeklyActivityChartProps) => {
         };
       }
 
-      // Aggregate attempts by day
       attempts?.forEach((attempt) => {
         const dayKey = format(new Date(attempt.attempted_at), "yyyy-MM-dd");
         if (dailyData[dayKey]) {
@@ -76,9 +75,9 @@ const WeeklyActivityChart = ({ userId }: WeeklyActivityChartProps) => {
 
   if (loading) {
     return (
-      <Card className="p-6">
+      <Card className="p-6 bg-accent">
         <div className="h-[200px] flex items-center justify-center">
-          <p className="text-muted-foreground">Loading activity...</p>
+          <p className="font-bold text-accent-foreground uppercase">Loading...</p>
         </div>
       </Card>
     );
@@ -89,57 +88,62 @@ const WeeklyActivityChart = ({ userId }: WeeklyActivityChartProps) => {
   const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 bg-card">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-bold">Weekly Activity</h3>
-          <p className="text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Zap className="w-5 h-5 text-secondary" />
+            <h3 className="font-display text-xl text-foreground">Weekly Activity</h3>
+          </div>
+          <p className="text-sm font-bold text-muted-foreground uppercase mt-1">
             {totalQuestions} questions • {accuracy}% accuracy
           </p>
         </div>
       </div>
       <div className="h-[200px]">
         {totalQuestions === 0 ? (
-          <div className="h-full flex items-center justify-center text-muted-foreground">
-            <p>Complete some lessons to see your activity!</p>
+          <div className="h-full flex items-center justify-center">
+            <p className="font-bold text-muted-foreground">Complete lessons to see activity!</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--foreground))" strokeOpacity={0.2} />
               <XAxis
                 dataKey="day"
-                tick={{ fontSize: 12 }}
-                className="text-muted-foreground"
+                tick={{ fontSize: 12, fontWeight: 700 }}
                 tickLine={false}
-                axisLine={false}
+                axisLine={{ stroke: "hsl(var(--foreground))", strokeWidth: 2 }}
               />
               <YAxis
-                tick={{ fontSize: 12 }}
-                className="text-muted-foreground"
+                tick={{ fontSize: 12, fontWeight: 700 }}
                 tickLine={false}
-                axisLine={false}
+                axisLine={{ stroke: "hsl(var(--foreground))", strokeWidth: 2 }}
                 allowDecimals={false}
               />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "var(--radius)",
+                  border: "4px solid hsl(var(--foreground))",
+                  boxShadow: "4px 4px 0px hsl(var(--foreground))",
+                  fontWeight: 700,
                 }}
-                labelStyle={{ color: "hsl(var(--foreground))" }}
               />
               <Bar
                 dataKey="questions"
                 name="Questions"
                 fill="hsl(var(--primary))"
-                radius={[4, 4, 0, 0]}
+                stroke="hsl(var(--foreground))"
+                strokeWidth={2}
+                radius={0}
               />
               <Bar
                 dataKey="correct"
                 name="Correct"
                 fill="hsl(var(--success))"
-                radius={[4, 4, 0, 0]}
+                stroke="hsl(var(--foreground))"
+                strokeWidth={2}
+                radius={0}
               />
             </BarChart>
           </ResponsiveContainer>

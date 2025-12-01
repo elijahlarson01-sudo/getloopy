@@ -7,6 +7,7 @@ import {
   Legend,
   Tooltip,
 } from "recharts";
+import { Target } from "lucide-react";
 
 interface SubjectData {
   name: string;
@@ -23,9 +24,9 @@ const COLORS = [
   "hsl(var(--primary))",
   "hsl(var(--accent))",
   "hsl(var(--success))",
-  "hsl(82, 25%, 55%)",
-  "hsl(38, 50%, 60%)",
-  "hsl(200, 60%, 50%)",
+  "hsl(var(--pink))",
+  "hsl(var(--orange))",
+  "hsl(var(--secondary))",
 ];
 
 const SubjectBreakdownChart = ({ subjects, subjectProgress }: SubjectBreakdownChartProps) => {
@@ -41,20 +42,26 @@ const SubjectBreakdownChart = ({ subjects, subjectProgress }: SubjectBreakdownCh
 
   if (totalLessons === 0) {
     return (
-      <Card className="p-6">
-        <h3 className="text-lg font-bold mb-4">Subject Breakdown</h3>
-        <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-          <p>Complete lessons to see your breakdown!</p>
+      <Card className="p-6 bg-card">
+        <div className="flex items-center gap-2 mb-4">
+          <Target className="w-5 h-5 text-pink" />
+          <h3 className="font-display text-xl text-foreground">Subject Breakdown</h3>
+        </div>
+        <div className="h-[200px] flex items-center justify-center">
+          <p className="font-bold text-muted-foreground">Complete lessons to see breakdown!</p>
         </div>
       </Card>
     );
   }
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 bg-card">
       <div className="mb-4">
-        <h3 className="text-lg font-bold">Subject Breakdown</h3>
-        <p className="text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <Target className="w-5 h-5 text-pink" />
+          <h3 className="font-display text-xl text-foreground">Subject Breakdown</h3>
+        </div>
+        <p className="text-sm font-bold text-muted-foreground uppercase mt-1">
           {totalLessons} lessons completed
         </p>
       </div>
@@ -65,11 +72,13 @@ const SubjectBreakdownChart = ({ subjects, subjectProgress }: SubjectBreakdownCh
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={50}
-              outerRadius={70}
+              innerRadius={45}
+              outerRadius={65}
               paddingAngle={4}
               dataKey="lessons"
               nameKey="name"
+              stroke="hsl(var(--foreground))"
+              strokeWidth={3}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
@@ -78,14 +87,15 @@ const SubjectBreakdownChart = ({ subjects, subjectProgress }: SubjectBreakdownCh
             <Tooltip
               contentStyle={{
                 backgroundColor: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "var(--radius)",
+                border: "4px solid hsl(var(--foreground))",
+                boxShadow: "4px 4px 0px hsl(var(--foreground))",
+                fontWeight: 700,
               }}
               formatter={(value: number, name: string) => [`${value} lessons`, name]}
             />
             <Legend
               formatter={(value) => (
-                <span className="text-sm text-foreground">{value}</span>
+                <span className="text-sm font-bold text-foreground uppercase">{value}</span>
               )}
             />
           </PieChart>

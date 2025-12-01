@@ -309,7 +309,7 @@ const Subject = () => {
                             )}
                           </div>
                           {!isModuleLocked && !isCompleted && (
-                            <Button size="sm" variant="gradient">
+                            <Button size="sm" variant="default">
                               Start
                             </Button>
                           )}
