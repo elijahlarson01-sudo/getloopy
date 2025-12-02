@@ -4,24 +4,24 @@ import { Flame, Brain, Zap, Star, Heart, Sparkles } from "lucide-react";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden radiant-bg">
-      {/* Decorative floating shapes */}
+      {/* Decorative floating shapes - Ultra bold Haring style */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Dancing figures inspired by Haring */}
-        <div className="absolute top-20 left-10 w-16 h-16 bg-primary border-4 border-foreground rounded-full dance" />
-        <div className="absolute top-40 right-20 w-12 h-12 bg-secondary border-4 border-foreground rotate-45 dance" style={{ animationDelay: '0.2s' }} />
-        <div className="absolute bottom-32 left-1/4 w-14 h-14 bg-accent border-4 border-foreground dance" style={{ animationDelay: '0.4s' }} />
-        <div className="absolute top-1/3 right-10 w-10 h-10 bg-success border-4 border-foreground rounded-full dance" style={{ animationDelay: '0.1s' }} />
-        <div className="absolute bottom-40 right-1/3 w-8 h-8 bg-pink border-4 border-foreground rotate-12 dance" style={{ animationDelay: '0.3s' }} />
-        <div className="absolute top-60 left-1/3 w-6 h-6 bg-orange border-4 border-foreground rounded-full dance" style={{ animationDelay: '0.5s' }} />
+        {/* Dancing figures - bolder and more energetic */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-primary border-[6px] border-foreground rounded-full dance" />
+        <div className="absolute top-40 right-20 w-16 h-16 bg-secondary border-[6px] border-foreground rotate-45 dance" style={{ animationDelay: '0.2s' }} />
+        <div className="absolute bottom-32 left-1/4 w-18 h-18 bg-accent border-[6px] border-foreground rounded-2xl dance" style={{ animationDelay: '0.4s' }} />
+        <div className="absolute top-1/3 right-10 w-14 h-14 bg-success border-[6px] border-foreground rounded-full dance" style={{ animationDelay: '0.1s' }} />
+        <div className="absolute bottom-40 right-1/3 w-12 h-12 bg-pink border-[6px] border-foreground rotate-12 dance" style={{ animationDelay: '0.3s' }} />
+        <div className="absolute top-60 left-1/3 w-10 h-10 bg-orange border-[6px] border-foreground rounded-full dance" style={{ animationDelay: '0.5s' }} />
         
-        {/* Motion lines */}
-        <div className="absolute top-1/4 left-5 w-20 h-1 bg-foreground rounded-full" />
-        <div className="absolute top-1/4 left-5 mt-2 w-16 h-1 bg-foreground rounded-full" />
-        <div className="absolute top-1/4 left-5 mt-4 w-12 h-1 bg-foreground rounded-full" />
+        {/* Radiant energy lines - thicker and more dynamic */}
+        <div className="absolute top-1/4 left-5 w-24 h-2 bg-foreground rounded-full" />
+        <div className="absolute top-1/4 left-5 mt-3 w-20 h-2 bg-foreground rounded-full" />
+        <div className="absolute top-1/4 left-5 mt-6 w-16 h-2 bg-foreground rounded-full" />
         
-        <div className="absolute bottom-1/4 right-5 w-20 h-1 bg-foreground rounded-full" />
-        <div className="absolute bottom-1/4 right-5 mb-2 w-16 h-1 bg-foreground rounded-full" />
-        <div className="absolute bottom-1/4 right-5 mb-4 w-12 h-1 bg-foreground rounded-full" />
+        <div className="absolute bottom-1/4 right-5 w-24 h-2 bg-foreground rounded-full" />
+        <div className="absolute bottom-1/4 right-5 mb-3 w-20 h-2 bg-foreground rounded-full" />
+        <div className="absolute bottom-1/4 right-5 mb-6 w-16 h-2 bg-foreground rounded-full" />
       </div>
 
       {/* Hero Section */}
@@ -41,18 +41,18 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Main title */}
+            {/* Main title - bigger and bolder */}
             <div className="relative inline-block">
-              <h1 className="font-display text-8xl md:text-9xl tracking-wider text-foreground">
+              <h1 className="font-display text-9xl md:text-[12rem] tracking-tight text-foreground leading-none">
                 LOOP
               </h1>
-              {/* Decorative stars */}
-              <Star className="absolute -top-4 -right-8 w-8 h-8 text-secondary fill-secondary animate-wiggle" />
-              <Sparkles className="absolute -bottom-2 -left-6 w-6 h-6 text-pink fill-pink animate-wiggle" style={{ animationDelay: '0.2s' }} />
+              {/* Decorative stars - bigger */}
+              <Star className="absolute -top-6 -right-10 w-12 h-12 text-secondary fill-secondary animate-wiggle" />
+              <Sparkles className="absolute -bottom-4 -left-8 w-10 h-10 text-pink fill-pink animate-wiggle" style={{ animationDelay: '0.2s' }} />
             </div>
             
-            <p className="font-marker text-2xl md:text-3xl text-foreground rotate-[-1deg]">
-              Embracing the Change in Learning!
+            <p className="font-marker text-3xl md:text-4xl text-foreground rotate-[-2deg]">
+              Learn Through Daily Repetition!
             </p>
             
             <div className="pop-card bg-card p-6 max-w-2xl mx-auto">
