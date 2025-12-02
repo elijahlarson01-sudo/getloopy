@@ -2,142 +2,142 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Keith Haring-inspired Design System v2
-   Electric colors, bold outlines, dancing energy, street art vibes
+/* Keith Haring-inspired Design System
+   Bold primary colors, thick black outlines, energetic hand-drawn feel
    All colors MUST be HSL.
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Lilita+One&family=Baloo+2:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Nunito:wght@400;600;700;800;900&display=swap');
 
 @layer base {
   :root {
-    /* Keith Haring Electric Palette */
-    --background: 48 100% 97%;
-    --foreground: 0 0% 0%;
+    /* Keith Haring Primary Palette */
+    --background: 60 30% 96%;
+    --foreground: 0 0% 5%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 0 0% 5%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 5%;
 
-    /* Screaming Red */
-    --primary: 0 100% 50%;
+    /* Vibrant Primary Red */
+    --primary: 0 85% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 0 100% 65%;
+    --primary-light: 0 80% 65%;
 
-    /* Neon Yellow */
-    --secondary: 54 100% 50%;
-    --secondary-foreground: 0 0% 0%;
+    /* Electric Yellow */
+    --secondary: 50 100% 50%;
+    --secondary-foreground: 0 0% 5%;
 
-    /* Cream muted */
-    --muted: 45 30% 88%;
-    --muted-foreground: 0 0% 30%;
+    /* Soft muted for backgrounds */
+    --muted: 60 20% 90%;
+    --muted-foreground: 0 0% 35%;
 
-    /* Electric Blue */
-    --accent: 210 100% 50%;
+    /* Bold Blue Accent */
+    --accent: 220 90% 55%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 210 100% 65%;
+    --accent-light: 220 85% 65%;
 
-    /* Grass Green */
-    --success: 120 100% 35%;
+    /* Vibrant Green Success */
+    --success: 140 75% 45%;
     --success-foreground: 0 0% 100%;
 
-    /* Hot Magenta */
-    --pink: 320 100% 50%;
+    /* Hot Pink for special elements */
+    --pink: 330 85% 55%;
     --pink-foreground: 0 0% 100%;
 
-    /* Tangerine */
-    --orange: 30 100% 50%;
-    --orange-foreground: 0 0% 0%;
+    /* Orange energy */
+    --orange: 25 95% 55%;
+    --orange-foreground: 0 0% 100%;
 
-    --destructive: 0 100% 50%;
+    --destructive: 0 85% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Ultra-thick black outlines */
-    --border: 0 0% 0%;
-    --input: 0 0% 0%;
-    --ring: 0 0% 0%;
+    /* Thick black borders - signature Haring style */
+    --border: 0 0% 5%;
+    --input: 0 0% 5%;
+    --ring: 0 0% 5%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     
-    /* Ultra-bold Haring tokens */
-    --outline-thick: 5px solid hsl(0 0% 0%);
-    --outline-medium: 4px solid hsl(0 0% 0%);
-    --outline-thin: 3px solid hsl(0 0% 0%);
+    /* Custom design tokens */
+    --outline-thick: 4px solid hsl(0 0% 5%);
+    --outline-medium: 3px solid hsl(0 0% 5%);
+    --outline-thin: 2px solid hsl(0 0% 5%);
     
-    --shadow-pop: 8px 8px 0px hsl(0 0% 0%);
-    --shadow-pop-sm: 5px 5px 0px hsl(0 0% 0%);
-    --shadow-pop-hover: 12px 12px 0px hsl(0 0% 0%);
+    --shadow-pop: 6px 6px 0px hsl(0 0% 5%);
+    --shadow-pop-sm: 4px 4px 0px hsl(0 0% 5%);
+    --shadow-pop-hover: 8px 8px 0px hsl(0 0% 5%);
     
-    --transition-bounce: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --transition-smooth: all 0.2s ease-out;
+    --transition-bounce: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-smooth: all 0.15s ease-out;
 
-    --sidebar-background: 48 100% 97%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 0 100% 50%;
+    --sidebar-background: 60 30% 96%;
+    --sidebar-foreground: 0 0% 5%;
+    --sidebar-primary: 0 85% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 54 100% 50%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 0%;
-    --sidebar-ring: 0 0% 0%;
+    --sidebar-accent: 50 100% 50%;
+    --sidebar-accent-foreground: 0 0% 5%;
+    --sidebar-border: 0 0% 5%;
+    --sidebar-ring: 0 0% 5%;
   }
 
   .dark {
-    --background: 0 0% 8%;
-    --foreground: 48 100% 97%;
+    --background: 240 10% 8%;
+    --foreground: 60 30% 96%;
 
-    --card: 0 0% 12%;
-    --card-foreground: 48 100% 97%;
+    --card: 240 10% 12%;
+    --card-foreground: 60 30% 96%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 48 100% 97%;
+    --popover: 240 10% 12%;
+    --popover-foreground: 60 30% 96%;
 
-    /* Screaming Red */
-    --primary: 0 100% 50%;
+    /* Vibrant Primary Red */
+    --primary: 0 85% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 0 100% 65%;
+    --primary-light: 0 80% 65%;
 
-    /* Neon Yellow */
-    --secondary: 54 100% 50%;
-    --secondary-foreground: 0 0% 0%;
+    /* Electric Yellow */
+    --secondary: 50 100% 50%;
+    --secondary-foreground: 0 0% 5%;
 
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 240 10% 18%;
+    --muted-foreground: 60 10% 65%;
 
-    /* Electric Blue */
-    --accent: 210 100% 50%;
+    /* Bold Blue Accent */
+    --accent: 220 90% 60%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 210 100% 65%;
+    --accent-light: 220 85% 70%;
 
-    --success: 120 100% 35%;
+    --success: 140 75% 50%;
     --success-foreground: 0 0% 100%;
 
-    --pink: 320 100% 50%;
+    --pink: 330 85% 60%;
     --pink-foreground: 0 0% 100%;
 
-    --orange: 30 100% 50%;
-    --orange-foreground: 0 0% 0%;
+    --orange: 25 95% 60%;
+    --orange-foreground: 0 0% 100%;
 
-    --destructive: 0 100% 50%;
+    --destructive: 0 85% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 48 100% 97%;
-    --input: 48 100% 97%;
-    --ring: 48 100% 97%;
+    --border: 60 30% 96%;
+    --input: 60 30% 96%;
+    --ring: 60 30% 96%;
     
-    --shadow-pop: 8px 8px 0px hsl(48 100% 97%);
-    --shadow-pop-sm: 5px 5px 0px hsl(48 100% 97%);
-    --shadow-pop-hover: 12px 12px 0px hsl(48 100% 97%);
+    --shadow-pop: 6px 6px 0px hsl(60 30% 96%);
+    --shadow-pop-sm: 4px 4px 0px hsl(60 30% 96%);
+    --shadow-pop-hover: 8px 8px 0px hsl(60 30% 96%);
 
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 48 100% 97%;
-    --sidebar-primary: 0 100% 50%;
+    --sidebar-background: 240 10% 10%;
+    --sidebar-foreground: 60 30% 96%;
+    --sidebar-primary: 0 85% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 54 100% 50%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 48 100% 97%;
-    --sidebar-ring: 48 100% 97%;
+    --sidebar-accent: 50 100% 50%;
+    --sidebar-accent-foreground: 0 0% 5%;
+    --sidebar-border: 60 30% 96%;
+    --sidebar-ring: 60 30% 96%;
   }
 }
 
@@ -148,32 +148,30 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Baloo 2', cursive;
-    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
   }
 
   h1, h2, h3, .font-display {
-    font-family: 'Fredoka One', cursive;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
+    font-family: 'Bangers', cursive;
+    letter-spacing: 0.05em;
   }
 
   .font-marker {
-    font-family: 'Lilita One', cursive;
+    font-family: 'Permanent Marker', cursive;
   }
 }
 
 @layer components {
-  /* Keith Haring signature ultra-bold border style */
+  /* Keith Haring signature thick-border style */
   .haring-box {
-    @apply border-[5px] border-foreground bg-card rounded-xl;
+    @apply border-4 border-foreground bg-card;
     box-shadow: var(--shadow-pop);
     transition: var(--transition-bounce);
   }
   
   .haring-box:hover {
     box-shadow: var(--shadow-pop-hover);
-    transform: translate(-3px, -3px);
+    transform: translate(-2px, -2px);
   }
 
   /* Motion lines - signature Haring energy */
@@ -227,14 +225,14 @@
 
   /* Pop shadow cards */
   .pop-card {
-    @apply border-[5px] border-foreground rounded-xl;
+    @apply border-4 border-foreground rounded-lg;
     box-shadow: var(--shadow-pop);
     transition: var(--transition-bounce);
   }
   
   .pop-card:hover {
     box-shadow: var(--shadow-pop-hover);
-    transform: translate(-4px, -4px);
+    transform: translate(-3px, -3px);
   }
 
   /* Dancing figure animation */
@@ -279,13 +277,13 @@
 }
 
 @layer utilities {
-  /* Ultra-thick border utilities */
+  /* Thick border utilities */
   .border-thick {
-    border-width: 5px;
+    border-width: 4px;
   }
   
   .border-medium {
-    border-width: 4px;
+    border-width: 3px;
   }
 
   /* Shadow pop utilities */

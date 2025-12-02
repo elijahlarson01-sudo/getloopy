@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Fredoka One', 'cursive'],
-        marker: ['Lilita One', 'cursive'],
-        body: ['Baloo 2', 'cursive'],
+        display: ['Bangers', 'cursive'],
+        marker: ['Permanent Marker', 'cursive'],
+        body: ['Nunito', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -86,12 +86,11 @@ export default {
         '3': '3px',
         '4': '4px',
         '5': '5px',
-        '6': '6px',
       },
       boxShadow: {
-        'pop': '8px 8px 0px hsl(var(--foreground))',
-        'pop-sm': '5px 5px 0px hsl(var(--foreground))',
-        'pop-hover': '12px 12px 0px hsl(var(--foreground))',
+        'pop': '6px 6px 0px hsl(var(--foreground))',
+        'pop-sm': '4px 4px 0px hsl(var(--foreground))',
+        'pop-hover': '8px 8px 0px hsl(var(--foreground))',
       },
       keyframes: {
         "accordion-down": {
