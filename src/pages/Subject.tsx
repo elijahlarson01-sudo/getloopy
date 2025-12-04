@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Database, BarChart3, Code, Globe, CheckCircle2, Lock, Play } from "lucide-react";
 
 interface Subject {
@@ -87,7 +86,6 @@ const Subject = () => {
   };
 
   const fetchModules = async (userId: string) => {
-    // Fetch all modules for this subject
     const { data: modulesData, error: modulesError } = await supabase
       .from("modules")
       .select("*")
@@ -101,7 +99,6 @@ const Subject = () => {
 
     setModules(modulesData || []);
 
-    // Fetch user progress for these modules
     const { data: progressData, error: progressError } = await supabase
       .from("user_module_progress")
       .select("*")
@@ -126,9 +123,9 @@ const Subject = () => {
 
   const groupModulesByLevel = (): LevelGroup[] => {
     const levels = {
-      beginner: { level: "Beginner Level", emoji: "🟢", modules: [] as Module[], totalQuestions: 0 },
-      intermediate: { level: "Intermediate Level", emoji: "🟡", modules: [] as Module[], totalQuestions: 0 },
-      advanced: { level: "Advanced Level", emoji: "🔴", modules: [] as Module[], totalQuestions: 0 },
+      beginner: { level: "Beginner Level", emoji: "●", modules: [] as Module[], totalQuestions: 0 },
+      intermediate: { level: "Intermediate Level", emoji: "●●", modules: [] as Module[], totalQuestions: 0 },
+      advanced: { level: "Advanced Level", emoji: "●●●", modules: [] as Module[], totalQuestions: 0 },
     };
 
     modules.forEach((module) => {
@@ -139,11 +136,9 @@ const Subject = () => {
       }
     });
 
-    // Check if beginner level is complete
     const beginnerComplete = levels.beginner.modules.length > 0 && 
       levels.beginner.modules.every(m => moduleProgress[m.id]?.is_completed);
 
-    // Check if intermediate level is complete
     const intermediateComplete = levels.intermediate.modules.length > 0 &&
       levels.intermediate.modules.every(m => moduleProgress[m.id]?.is_completed);
 
@@ -160,8 +155,10 @@ const Subject = () => {
 
   if (!subject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="doodle-box p-8">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -173,60 +170,68 @@ const Subject = () => {
   const completedModules = Object.values(moduleProgress).filter(p => p.is_completed).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
-      <header className="border-b border-border bg-card/50 backdrop-blur">
+    <div className="min-h-screen bg-background relative">
+      {/* Subtle dot grid background */}
+      <div className="fixed inset-0 dot-grid pointer-events-none opacity-40" />
+
+      <header className="border-b-2 border-foreground bg-background relative z-10">
         <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center gap-4">
           <Button variant="ghost" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-2xl font-black bg-gradient-to-r from-primary via-primary-light to-accent bg-clip-text text-transparent">
+          <h1 className="font-display text-2xl text-foreground">
             Loop
           </h1>
         </div>
       </header>
 
-      <main className="container max-w-6xl mx-auto px-4 py-8">
+      <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-start gap-6 mb-6">
-            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-${subject.color}/20 to-${subject.color}/10 flex items-center justify-center flex-shrink-0`}>
-              <IconComponent className={`w-10 h-10 text-${subject.color}`} />
+            <div className="w-16 h-16 border-2 border-foreground rounded-xl flex items-center justify-center flex-shrink-0 sketch-hover">
+              <IconComponent className="w-8 h-8 text-foreground" />
             </div>
             <div className="flex-1">
-              <h2 className="text-4xl font-bold mb-2">{subject.name}</h2>
+              <h2 className="font-display text-4xl mb-2">{subject.name}</h2>
               <p className="text-lg text-muted-foreground mb-4">{subject.description}</p>
-              <div className="flex flex-wrap gap-4">
-                <Badge variant="outline" className="text-sm">
+              <div className="flex flex-wrap gap-3">
+                <span className="sketch-card px-3 py-1 text-sm">
                   {totalModules} lessons
-                </Badge>
-                <Badge variant="outline" className="text-sm">
+                </span>
+                <span className="sketch-card px-3 py-1 text-sm">
                   {totalQuestions} questions
-                </Badge>
+                </span>
                 {completedModules > 0 && (
-                  <Badge variant="outline" className="text-sm bg-success/10 text-success border-success/30">
+                  <span className="sketch-card px-3 py-1 text-sm bg-foreground text-background">
                     {completedModules} completed
-                  </Badge>
+                  </span>
                 )}
               </div>
             </div>
           </div>
 
           {completedModules > 0 && (
-            <Card className="p-4 bg-card/50 backdrop-blur border-2">
+            <div className="sketch-card p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-muted-foreground">Overall Progress</span>
-                <span className="text-sm font-bold">{Math.round((completedModules / totalModules) * 100)}%</span>
+                <span className="text-sm text-muted-foreground">Overall Progress</span>
+                <span className="text-sm font-semibold">{Math.round((completedModules / totalModules) * 100)}%</span>
               </div>
-              <Progress value={(completedModules / totalModules) * 100} className="h-2" />
-            </Card>
+              <div className="h-2 bg-secondary border border-foreground rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-foreground transition-all rounded-full"
+                  style={{ width: `${(completedModules / totalModules) * 100}%` }}
+                />
+              </div>
+            </div>
           )}
         </div>
 
         {/* Learning Roadmap */}
         <div className="space-y-8">
           <div>
-            <h3 className="text-2xl font-bold mb-2">📚 Learning Roadmap</h3>
+            <h3 className="font-display text-2xl mb-2">Learning Roadmap</h3>
             <p className="text-muted-foreground mb-6">
               Your comprehensive {subject.name} curriculum with {totalModules} lessons organized by difficulty
             </p>
@@ -238,16 +243,16 @@ const Subject = () => {
             return (
               <div key={group.level} className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <h4 className={`text-xl font-bold ${isLevelLocked ? 'text-muted-foreground' : ''}`}>
+                  <h4 className={`font-display text-xl ${isLevelLocked ? 'text-muted-foreground' : ''}`}>
                     {group.emoji} {group.level}
                   </h4>
-                  <Badge variant="outline" className={isLevelLocked ? 'opacity-60' : ''}>
+                  <span className={`text-sm text-muted-foreground ${isLevelLocked ? 'opacity-60' : ''}`}>
                     {group.modules.length} lessons, {group.totalQuestions} questions
-                  </Badge>
+                  </span>
                   {isLevelLocked && (
-                    <Badge variant="outline" className="bg-muted text-muted-foreground">
-                      <Lock className="w-3 h-3 mr-1" /> Locked
-                    </Badge>
+                    <span className="sketch-card px-2 py-1 text-xs flex items-center gap-1">
+                      <Lock className="w-3 h-3" /> Locked
+                    </span>
                   )}
                 </div>
 
@@ -261,42 +266,42 @@ const Subject = () => {
                     const isModuleLocked = isLevelLocked || !isPreviousCompleted;
 
                     return (
-                      <Card
+                      <div
                         key={module.id}
-                        className={`p-4 transition-all ${
+                        className={`sketch-card p-4 transition-all ${
                           isCompleted
-                            ? "bg-success/10 border-success/30"
+                            ? "bg-foreground text-background"
                             : !isModuleLocked
-                            ? "bg-primary/5 border-primary/20 hover:border-primary/40 cursor-pointer hover:shadow-md"
-                            : "bg-muted/30 border-border opacity-60"
+                            ? "hover:shadow-sketch hover:-translate-x-1 hover:-translate-y-1 cursor-pointer"
+                            : "opacity-50"
                         }`}
                         onClick={() => !isModuleLocked && handleModuleClick(module.id)}
                       >
                         <div className="flex items-center gap-4">
                           <div
-                            className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 border-2 ${
                               isCompleted
-                                ? "bg-success"
+                                ? "border-background bg-background"
                                 : !isModuleLocked
-                                ? "bg-gradient-to-br from-primary to-primary-light"
-                                : "bg-muted"
+                                ? "border-foreground"
+                                : "border-foreground/50"
                             }`}
                           >
                             {isCompleted ? (
-                              <CheckCircle2 className="w-6 h-6 text-success-foreground" />
+                              <CheckCircle2 className="w-5 h-5 text-foreground" />
                             ) : !isModuleLocked ? (
-                              <Play className="w-6 h-6 text-primary-foreground" />
+                              <Play className="w-5 h-5 text-foreground" />
                             ) : (
-                              <Lock className="w-6 h-6 text-muted-foreground" />
+                              <Lock className="w-5 h-5 text-foreground/50" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h5 className="font-bold text-foreground">{module.title}</h5>
-                            <p className="text-sm text-muted-foreground">
+                            <h5 className="font-semibold">{module.title}</h5>
+                            <p className={`text-sm ${isCompleted ? 'opacity-70' : 'text-muted-foreground'}`}>
                               {module.description || `${module.question_count} practice questions`}
                             </p>
                             {isCompleted && progress && (
-                              <p className="text-sm text-success mt-1">
+                              <p className="text-sm mt-1 opacity-70">
                                 Completed • {progress.accuracy_percentage}% accuracy
                               </p>
                             )}
@@ -314,7 +319,7 @@ const Subject = () => {
                             </Button>
                           )}
                         </div>
-                      </Card>
+                      </div>
                     );
                   })}
                 </div>

@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom, Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart, Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon, Star, Sparkles } from "lucide-react";
+import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom, Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart, Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon, Star } from "lucide-react";
 import WeeklyActivityChart from "@/components/WeeklyActivityChart";
 import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
 import CohortLeaderboard from "@/components/CohortLeaderboard";
@@ -59,15 +58,6 @@ const iconMap: Record<string, any> = {
   Pi,
   Zap,
   Languages
-};
-
-const colorMap: Record<string, string> = {
-  primary: "bg-primary text-primary-foreground",
-  accent: "bg-accent text-accent-foreground",
-  success: "bg-success text-success-foreground",
-  pink: "bg-pink text-pink-foreground",
-  orange: "bg-orange text-orange-foreground",
-  secondary: "bg-secondary text-secondary-foreground",
 };
 
 const Dashboard = () => {
@@ -197,35 +187,32 @@ const Dashboard = () => {
     navigate(`/subject/${subjectId}`);
   };
 
-  const getSubjectColor = (index: number) => {
-    const colors = ["primary", "accent", "success", "pink", "orange", "secondary"];
-    return colors[index % colors.length];
-  };
-
   if (!user || !userProgress) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center radiant-bg">
-        <div className="pop-card bg-card p-8 animate-bounce-in">
-          <p className="font-bold text-foreground uppercase">Loading...</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="doodle-box p-8">
+          <p className="font-semibold text-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background radiant-bg relative">
-      {/* Decorative shapes */}
+    <div className="min-h-screen bg-background relative">
+      {/* Subtle dot grid background */}
+      <div className="fixed inset-0 dot-grid pointer-events-none opacity-40" />
+      
+      {/* Decorative doodles */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-20 right-10 w-10 h-10 bg-primary border-4 border-foreground rounded-full dance" />
-        <div className="absolute top-40 left-10 w-8 h-8 bg-secondary border-4 border-foreground rotate-45 dance" style={{ animationDelay: '0.2s' }} />
-        <div className="absolute bottom-40 right-20 w-6 h-6 bg-accent border-4 border-foreground dance" style={{ animationDelay: '0.3s' }} />
-        <div className="absolute bottom-20 left-16 w-8 h-8 bg-pink border-4 border-foreground rounded-full dance" style={{ animationDelay: '0.4s' }} />
+        <div className="absolute top-20 right-10 w-10 h-10 border-2 border-foreground rounded-full float opacity-15" />
+        <div className="absolute top-40 left-10 w-8 h-8 border-2 border-foreground rotate-45 float opacity-15" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-40 right-20 w-6 h-6 border-2 border-foreground rounded-lg float opacity-15" style={{ animationDelay: '2s' }} />
       </div>
 
-      <header className="border-b-4 border-foreground bg-card relative z-10">
+      <header className="border-b-2 border-foreground bg-background relative z-10">
         <div className="container max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="font-display text-4xl text-foreground tracking-wide">
-            LOOP
+          <h1 className="font-display text-3xl text-foreground">
+            Loop
           </h1>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -233,17 +220,17 @@ const Dashboard = () => {
                 <Menu className="w-5 h-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 border-4 border-foreground shadow-pop">
-              <DropdownMenuItem onClick={() => { setEditingName(userName); setEditNameOpen(true); }} className="font-bold">
+            <DropdownMenuContent align="end" className="w-48 border-2 border-foreground shadow-sketch">
+              <DropdownMenuItem onClick={() => { setEditingName(userName); setEditNameOpen(true); }} className="font-medium">
                 <UserIcon className="w-4 h-4 mr-2" />
                 Edit Name
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/onboarding?edit=true")} className="font-bold">
+              <DropdownMenuItem onClick={() => navigate("/onboarding?edit=true")} className="font-medium">
                 <Settings className="w-4 h-4 mr-2" />
                 Edit Preferences
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-foreground h-0.5" />
-              <DropdownMenuItem onClick={handleLogout} className="font-bold">
+              <DropdownMenuSeparator className="bg-foreground/20" />
+              <DropdownMenuItem onClick={handleLogout} className="font-medium">
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
               </DropdownMenuItem>
@@ -254,32 +241,29 @@ const Dashboard = () => {
 
       <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10">
         <div className="mb-8">
-          <div className="inline-block relative">
-            <h2 className="font-display text-4xl md:text-5xl text-foreground">
-              Welcome back{userName ? `, ${userName}` : ""}!
-            </h2>
-            <Star className="absolute -top-2 -right-6 w-6 h-6 text-secondary fill-secondary animate-wiggle" />
-          </div>
-          <p className="font-marker text-lg text-foreground mt-2 rotate-[-1deg]">
+          <h2 className="font-display text-4xl md:text-5xl text-foreground">
+            Welcome back{userName ? `, ${userName}` : ""}!
+          </h2>
+          <p className="font-sketch text-xl text-muted-foreground mt-2">
             What took you so long?! Click a subject below!
           </p>
         </div>
 
         {/* Edit Name Dialog */}
         <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
-          <DialogContent className="border-4 border-foreground shadow-pop">
+          <DialogContent className="border-2 border-foreground shadow-sketch">
             <DialogHeader>
               <DialogTitle className="font-display text-2xl">Edit Your Name</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="font-bold uppercase">Display Name</Label>
+                <Label htmlFor="name" className="font-medium">Display Name</Label>
                 <Input 
                   id="name" 
                   value={editingName} 
                   onChange={e => setEditingName(e.target.value)} 
                   placeholder="Enter your name"
-                  className="border-4 border-foreground shadow-pop-sm h-12 font-semibold"
+                  className="border-2 border-foreground shadow-sketch-sm h-11"
                 />
               </div>
             </div>
@@ -296,40 +280,40 @@ const Dashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className="pop-card bg-secondary p-8">
+          <div className="doodle-box p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="font-bold uppercase text-sm text-secondary-foreground/80">
+                <p className="text-sm text-muted-foreground font-medium">
                   Current Streak
                 </p>
-                <h3 className="font-display text-6xl text-secondary-foreground mt-1">
+                <h3 className="font-display text-5xl text-foreground mt-1">
                   {userProgress.current_streak}
                 </h3>
               </div>
-              <div className="w-20 h-20 bg-card border-4 border-foreground flex items-center justify-center bounce-hover">
-                <Flame className="w-10 h-10 text-orange" />
+              <div className="w-16 h-16 border-2 border-foreground rounded-xl flex items-center justify-center sketch-hover">
+                <Flame className="w-8 h-8 text-foreground" />
               </div>
             </div>
-            <p className="font-semibold text-secondary-foreground/80">
+            <p className="text-sm text-muted-foreground">
               Keep practicing to maintain your streak!
             </p>
           </div>
 
-          <div className="pop-card bg-primary p-8">
+          <div className="doodle-box p-6 bg-foreground text-background">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="font-bold uppercase text-sm text-primary-foreground/80">
+                <p className="text-sm opacity-70 font-medium">
                   Weekly Points
                 </p>
-                <h3 className="font-display text-6xl text-primary-foreground mt-1">
+                <h3 className="font-display text-5xl mt-1">
                   {userProgress.weekly_mastery_points || 0}
                 </h3>
               </div>
-              <div className="w-20 h-20 bg-card border-4 border-foreground flex items-center justify-center bounce-hover">
-                <Brain className="w-10 h-10 text-accent" />
+              <div className="w-16 h-16 border-2 border-background rounded-xl flex items-center justify-center bg-background sketch-hover">
+                <Brain className="w-8 h-8 text-foreground" />
               </div>
             </div>
-            <p className="font-semibold text-primary-foreground/80">
+            <p className="text-sm opacity-70">
               Resets every Monday • Total: {userProgress.mastery_points} pts
             </p>
           </div>
@@ -345,10 +329,7 @@ const Dashboard = () => {
         {/* Subjects */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <div className="relative inline-block">
-              <h3 className="font-display text-3xl text-foreground">Your Subjects</h3>
-              <Sparkles className="absolute -top-1 -right-5 w-5 h-5 text-pink fill-pink animate-wiggle" />
-            </div>
+            <h3 className="font-display text-2xl text-foreground">Your Subjects</h3>
             <Button variant="outline" size="sm" onClick={() => navigate("/onboarding?edit=true&step=subjects")} className="gap-2">
               <Pencil className="w-4 h-4" />
               Edit
@@ -361,32 +342,33 @@ const Dashboard = () => {
               const masteryLevel = progress?.mastery_level || 0;
               const lessonsCompleted = progress?.lessons_completed || 0;
               const accuracy = progress?.accuracy_percentage || 0;
-              const colorClass = getSubjectColor(index);
 
               return (
                 <div
                   key={subject.id}
-                  className={`pop-card p-6 cursor-pointer ${colorMap[colorClass]}`}
+                  className={`sketch-card p-5 cursor-pointer hover:shadow-sketch hover:-translate-x-1 hover:-translate-y-1 transition-all ${
+                    index % 2 === 0 ? 'tilt-1' : 'tilt-2'
+                  }`}
                   onClick={() => handleSubjectClick(subject.id)}
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-card border-4 border-foreground flex items-center justify-center flex-shrink-0 bounce-hover">
-                      <IconComponent className="w-7 h-7 text-foreground" />
+                    <div className="w-12 h-12 border-2 border-foreground rounded-lg flex items-center justify-center flex-shrink-0">
+                      <IconComponent className="w-6 h-6 text-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-display text-2xl">{subject.name}</h4>
-                      <p className="text-sm font-semibold opacity-80 mb-3">
+                      <h4 className="font-display text-xl">{subject.name}</h4>
+                      <p className="text-sm text-muted-foreground mb-3">
                         {subject.description}
                       </p>
                       {progress ? (
                         <>
-                          <div className="h-3 bg-card border-2 border-foreground overflow-hidden mb-2">
+                          <div className="h-2 bg-secondary border border-foreground rounded-full overflow-hidden mb-2">
                             <div 
-                              className="h-full bg-foreground transition-all"
+                              className="h-full bg-foreground transition-all rounded-full"
                               style={{ width: `${masteryLevel}%` }}
                             />
                           </div>
-                          <div className="flex gap-3 text-xs font-bold uppercase opacity-80">
+                          <div className="flex gap-3 text-xs text-muted-foreground">
                             <span>Lvl {masteryLevel}</span>
                             <span>•</span>
                             <span>{lessonsCompleted} lessons</span>
@@ -395,7 +377,7 @@ const Dashboard = () => {
                           </div>
                         </>
                       ) : (
-                        <p className="font-bold uppercase">
+                        <p className="text-sm font-medium text-foreground">
                           Start learning →
                         </p>
                       )}
