@@ -1,30 +1,50 @@
 import { Card } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
-import { Target } from "lucide-react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
+
+interface SubjectData {
+  name: string;
+  lessons: number;
+  color: string;
+}
 
 interface SubjectBreakdownChartProps {
   subjects: Array<{ id: string; name: string; color: string }>;
   subjectProgress: Record<string, { lessons_completed: number }>;
 }
 
+const COLORS = [
+  "hsl(var(--primary))",
+  "hsl(var(--accent))",
+  "hsl(var(--success))",
+  "hsl(82, 25%, 55%)",
+  "hsl(38, 50%, 60%)",
+  "hsl(200, 60%, 50%)",
+];
+
 const SubjectBreakdownChart = ({ subjects, subjectProgress }: SubjectBreakdownChartProps) => {
-  const data = subjects.map((subject, index) => ({
-    name: subject.name,
-    lessons: subjectProgress[subject.id]?.lessons_completed || 0,
-    color: index % 2 === 0 ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground))",
-  })).filter((d) => d.lessons > 0);
+  const data: SubjectData[] = subjects
+    .map((subject, index) => ({
+      name: subject.name,
+      lessons: subjectProgress[subject.id]?.lessons_completed || 0,
+      color: COLORS[index % COLORS.length],
+    }))
+    .filter((d) => d.lessons > 0);
 
   const totalLessons = data.reduce((sum, d) => sum + d.lessons, 0);
 
   if (totalLessons === 0) {
     return (
       <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Target className="w-5 h-5" />
-          <h3 className="font-display text-lg">Subject Breakdown</h3>
-        </div>
-        <div className="h-[200px] flex items-center justify-center">
-          <p className="text-muted-foreground">Complete lessons to see breakdown!</p>
+        <h3 className="text-lg font-bold mb-4">Subject Breakdown</h3>
+        <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+          <p>Complete lessons to see your breakdown!</p>
         </div>
       </Card>
     );
@@ -33,20 +53,41 @@ const SubjectBreakdownChart = ({ subjects, subjectProgress }: SubjectBreakdownCh
   return (
     <Card className="p-6">
       <div className="mb-4">
-        <div className="flex items-center gap-2">
-          <Target className="w-5 h-5" />
-          <h3 className="font-display text-lg">Subject Breakdown</h3>
-        </div>
-        <p className="text-sm text-muted-foreground mt-1">{totalLessons} lessons completed</p>
+        <h3 className="text-lg font-bold">Subject Breakdown</h3>
+        <p className="text-sm text-muted-foreground">
+          {totalLessons} lessons completed
+        </p>
       </div>
       <div className="h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie data={data} cx="50%" cy="50%" innerRadius={45} outerRadius={65} paddingAngle={4} dataKey="lessons" nameKey="name" stroke="hsl(var(--background))" strokeWidth={2}>
-              {data.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} />))}
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={50}
+              outerRadius={70}
+              paddingAngle={4}
+              dataKey="lessons"
+              nameKey="name"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
             </Pie>
-            <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "2px solid hsl(var(--foreground))", boxShadow: "2px 2px 0px hsl(var(--foreground))" }} formatter={(value: number, name: string) => [`${value} lessons`, name]} />
-            <Legend formatter={(value) => (<span className="text-sm text-foreground">{value}</span>)} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "hsl(var(--card))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: "var(--radius)",
+              }}
+              formatter={(value: number, name: string) => [`${value} lessons`, name]}
+            />
+            <Legend
+              formatter={(value) => (
+                <span className="text-sm text-foreground">{value}</span>
+              )}
+            />
           </PieChart>
         </ResponsiveContainer>
       </div>
