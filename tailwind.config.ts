@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Bangers', 'cursive'],
-        marker: ['Permanent Marker', 'cursive'],
-        body: ['Nunito', 'sans-serif'],
+        display: ['Comic Neue', 'cursive'],
+        sketch: ['Caveat', 'cursive'],
+        body: ['Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

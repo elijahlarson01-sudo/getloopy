@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Flame, ChevronRight, ChevronLeft, Check, Sparkles, X } from "lucide-react";
+import { Flame, ChevronRight, ChevronLeft, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MOTIVATIONS = [{
@@ -90,7 +89,6 @@ const Onboarding = () => {
               setSelectedUniversity(cohortData.university_id);
             }
           }
-          // Jump to subjects step if requested
           if (editStep === "subjects") {
             setStep(onboarding.is_studying_degree ? 5 : 3);
           }
@@ -129,7 +127,6 @@ const Onboarding = () => {
     fetchSubjects();
   }, [navigate, isEditMode]);
 
-  // Fetch cohorts when university changes
   useEffect(() => {
     const fetchCohorts = async () => {
       if (!selectedUniversity) {
@@ -146,7 +143,6 @@ const Onboarding = () => {
     fetchCohorts();
   }, [selectedUniversity]);
 
-  // Fetch cohort-specific subjects when cohort changes
   useEffect(() => {
     const fetchCohortSubjects = async () => {
       if (!selectedCohort) {
@@ -230,7 +226,7 @@ const Onboarding = () => {
           if (interestsError) throw interestsError;
         }
         toast({
-          title: "Welcome to Loop! 🎉",
+          title: "Welcome to Loop!",
           description: "Your learning journey begins now."
         });
       }
@@ -246,9 +242,8 @@ const Onboarding = () => {
     }
   };
 
-  // Flow: Motivation → Student? → University (if yes) → Degree (if yes) → Subjects
   const getTotalSteps = () => {
-    if (isStudyingDegree === null) return 5; // max possible
+    if (isStudyingDegree === null) return 5;
     return isStudyingDegree ? 5 : 3;
   };
 
@@ -280,20 +275,24 @@ const Onboarding = () => {
   };
 
   const isLastStep = isStudyingDegree ? step === 5 : step === 3;
-  // General subjects are all subjects not in cohort-specific list
   const generalSubjects = subjects.filter(s => !cohortSubjects.some(cs => cs.id === s.id));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center px-4 py-8">
-      <Card className="w-full max-w-2xl p-8 bg-card/50 backdrop-blur border-2 relative">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8 relative">
+      {/* Subtle dot grid background */}
+      <div className="fixed inset-0 dot-grid pointer-events-none opacity-40" />
+
+      <div className="w-full max-w-2xl doodle-box p-8 relative z-10">
         {isEditMode && (
           <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => navigate("/dashboard")}>
             <X className="w-4 h-4" />
           </Button>
         )}
         <div className="flex flex-col items-center mb-8">
-          <Flame className="w-10 h-10 text-accent mb-3" />
-          <h1 className="text-2xl font-black bg-gradient-to-r from-primary via-primary-light to-accent bg-clip-text text-transparent">
+          <div className="w-12 h-12 border-2 border-foreground rounded-xl flex items-center justify-center mb-3">
+            <Flame className="w-6 h-6 text-foreground" />
+          </div>
+          <h1 className="font-display text-2xl text-foreground">
             {isEditMode ? "Edit Preferences" : "Welcome to Loop"}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -304,7 +303,7 @@ const Onboarding = () => {
         {/* Progress indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
           {Array.from({ length: getTotalSteps() }, (_, i) => i + 1).map(s => (
-            <div key={s} className={cn("w-3 h-3 rounded-full transition-all duration-300", s === step ? "bg-primary w-8" : s < step ? "bg-primary" : "bg-muted")} />
+            <div key={s} className={cn("h-2 rounded-full transition-all duration-300 border border-foreground", s === step ? "bg-foreground w-8" : s < step ? "bg-foreground w-3" : "bg-background w-3")} />
           ))}
         </div>
 
@@ -312,7 +311,7 @@ const Onboarding = () => {
         {step === 1 && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-bold text-foreground mb-2">Why are you on Loop?</h2>
+              <h2 className="font-display text-xl text-foreground mb-2">Why are you on Loop?</h2>
               <p className="text-muted-foreground text-sm">Help us understand your learning goals</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -320,7 +319,7 @@ const Onboarding = () => {
                 <button
                   key={m.id}
                   onClick={() => setMotivation(m.id)}
-                  className={cn("p-4 rounded-xl border-2 transition-all duration-200 text-left", motivation === m.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                  className={cn("sketch-card p-4 transition-all duration-200 text-left hover:shadow-sketch hover:-translate-x-0.5 hover:-translate-y-0.5", motivation === m.id ? "bg-foreground text-background" : "")}
                 >
                   <span className="text-2xl mb-2 block">{m.icon}</span>
                   <span className="font-medium text-sm">{m.label}</span>
@@ -334,13 +333,13 @@ const Onboarding = () => {
         {step === 2 && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-bold text-foreground mb-2">Are you a current student?</h2>
+              <h2 className="font-display text-xl text-foreground mb-2">Are you a current student?</h2>
               <p className="text-muted-foreground text-sm">Join a cohort to compete with classmates</p>
             </div>
             <div className="flex gap-4 justify-center">
               <button
                 onClick={() => setIsStudyingDegree(true)}
-                className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === true ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                className={cn("sketch-card px-8 py-4 transition-all duration-200 font-medium hover:shadow-sketch hover:-translate-x-0.5 hover:-translate-y-0.5", isStudyingDegree === true ? "bg-foreground text-background" : "")}
               >
                 Yes 🎓
               </button>
@@ -350,7 +349,7 @@ const Onboarding = () => {
                   setSelectedUniversity(null);
                   setSelectedCohort(null);
                 }}
-                className={cn("px-8 py-4 rounded-xl border-2 transition-all duration-200 font-medium", isStudyingDegree === false ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                className={cn("sketch-card px-8 py-4 transition-all duration-200 font-medium hover:shadow-sketch hover:-translate-x-0.5 hover:-translate-y-0.5", isStudyingDegree === false ? "bg-foreground text-background" : "")}
               >
                 No
               </button>
@@ -362,7 +361,7 @@ const Onboarding = () => {
         {step === 3 && isStudyingDegree && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-bold text-foreground mb-2">Select your university</h2>
+              <h2 className="font-display text-xl text-foreground mb-2">Select your university</h2>
               <p className="text-muted-foreground text-sm">Find your school to join your cohort</p>
             </div>
             <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto">
@@ -374,7 +373,7 @@ const Onboarding = () => {
                     setSelectedCohort(null);
                     setSelectedInterests([]);
                   }}
-                  className={cn("p-4 rounded-xl border-2 transition-all duration-200 font-medium text-left", selectedUniversity === uni.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                  className={cn("sketch-card p-4 transition-all duration-200 font-medium text-left hover:shadow-sketch hover:-translate-x-0.5 hover:-translate-y-0.5", selectedUniversity === uni.id ? "bg-foreground text-background" : "")}
                 >
                   {uni.name}
                 </button>
@@ -386,7 +385,7 @@ const Onboarding = () => {
         {step === 3 && isStudyingDegree === false && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-bold text-foreground mb-2">What subjects interest you?</h2>
+              <h2 className="font-display text-xl text-foreground mb-2">What subjects interest you?</h2>
               <p className="text-muted-foreground text-sm">Select all that apply</p>
             </div>
             <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
@@ -394,10 +393,10 @@ const Onboarding = () => {
                 <button
                   key={subject.id}
                   onClick={() => toggleInterest(subject.id)}
-                  className={cn("p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3", selectedInterests.includes(subject.id) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                  className={cn("sketch-card p-3 transition-all duration-200 text-left flex items-center gap-3 hover:shadow-sketch hover:-translate-x-0.5 hover:-translate-y-0.5", selectedInterests.includes(subject.id) ? "bg-foreground text-background" : "")}
                 >
                   <span className="font-medium text-sm flex-1">{subject.name}</span>
-                  {selectedInterests.includes(subject.id) && <Check className="w-4 h-4 text-primary" />}
+                  {selectedInterests.includes(subject.id) && <Check className="w-4 h-4" />}
                 </button>
               ))}
             </div>
@@ -408,7 +407,7 @@ const Onboarding = () => {
         {step === 4 && isStudyingDegree && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-bold text-foreground mb-2">Select your degree</h2>
+              <h2 className="font-display text-xl text-foreground mb-2">Select your degree</h2>
               <p className="text-muted-foreground text-sm">Choose your program to see relevant content</p>
             </div>
             <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto">
@@ -419,7 +418,7 @@ const Onboarding = () => {
                     setSelectedCohort(cohort.id);
                     setSelectedInterests([]);
                   }}
-                  className={cn("p-4 rounded-xl border-2 transition-all duration-200 font-medium text-left", selectedCohort === cohort.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                  className={cn("sketch-card p-4 transition-all duration-200 font-medium text-left hover:shadow-sketch hover:-translate-x-0.5 hover:-translate-y-0.5", selectedCohort === cohort.id ? "bg-foreground text-background" : "")}
                 >
                   {cohort.degree_name}
                 </button>
@@ -432,41 +431,39 @@ const Onboarding = () => {
         {step === 5 && isStudyingDegree && (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-bold text-foreground mb-2">Select your subjects</h2>
+              <h2 className="font-display text-xl text-foreground mb-2">Select your subjects</h2>
               <p className="text-muted-foreground text-sm">Choose from your degree subjects and general topics</p>
             </div>
             <div className="max-h-[400px] overflow-y-auto space-y-6">
-              {/* Cohort-specific subjects */}
               {cohortSubjects.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Your Degree Subjects</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-3">Your Degree Subjects</h3>
                   <div className="grid grid-cols-2 gap-3">
                     {cohortSubjects.map(subject => (
                       <button
                         key={subject.id}
                         onClick={() => toggleInterest(subject.id)}
-                        className={cn("p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3", selectedInterests.includes(subject.id) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                        className={cn("sketch-card p-3 transition-all duration-200 text-left flex items-center gap-3 hover:shadow-sketch hover:-translate-x-0.5 hover:-translate-y-0.5", selectedInterests.includes(subject.id) ? "bg-foreground text-background" : "")}
                       >
                         <span className="font-medium text-sm flex-1">{subject.name}</span>
-                        {selectedInterests.includes(subject.id) && <Check className="w-4 h-4 text-primary" />}
+                        {selectedInterests.includes(subject.id) && <Check className="w-4 h-4" />}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
               
-              {/* General subjects */}
               <div>
-                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">General Topics</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">General Subjects</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {generalSubjects.map(subject => (
                     <button
                       key={subject.id}
                       onClick={() => toggleInterest(subject.id)}
-                      className={cn("p-3 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-3", selectedInterests.includes(subject.id) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50 bg-card")}
+                      className={cn("sketch-card p-3 transition-all duration-200 text-left flex items-center gap-3 hover:shadow-sketch hover:-translate-x-0.5 hover:-translate-y-0.5", selectedInterests.includes(subject.id) ? "bg-foreground text-background" : "")}
                     >
                       <span className="font-medium text-sm flex-1">{subject.name}</span>
-                      {selectedInterests.includes(subject.id) && <Check className="w-4 h-4 text-primary" />}
+                      {selectedInterests.includes(subject.id) && <Check className="w-4 h-4" />}
                     </button>
                   ))}
                 </div>
@@ -476,25 +473,35 @@ const Onboarding = () => {
         )}
 
         {/* Navigation */}
-        <div className="flex justify-between mt-8">
-          <Button variant="ghost" onClick={prevStep} disabled={step === 1} className="gap-2">
+        <div className="flex justify-between mt-8 pt-6 border-t-2 border-foreground">
+          <Button
+            variant="outline"
+            onClick={prevStep}
+            disabled={step === 1}
+            className="gap-1"
+          >
             <ChevronLeft className="w-4 h-4" />
             Back
           </Button>
-
-          {!isLastStep ? (
-            <Button variant="default" onClick={nextStep} disabled={!canProceed()} className="gap-2">
-              Next
+          {isLastStep ? (
+            <Button
+              onClick={handleComplete}
+              disabled={!canProceed() || loading}
+            >
+              {loading ? "Saving..." : isEditMode ? "Save Changes" : "Get Started"}
               <ChevronRight className="w-4 h-4" />
             </Button>
           ) : (
-            <Button variant="default" onClick={handleComplete} disabled={!canProceed() || loading} className="gap-2">
-              {loading ? "Saving..." : isEditMode ? "Save Changes" : "Get Started"}
-              <Sparkles className="w-4 h-4" />
+            <Button
+              onClick={nextStep}
+              disabled={!canProceed()}
+            >
+              Continue
+              <ChevronRight className="w-4 h-4" />
             </Button>
           )}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

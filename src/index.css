@@ -2,142 +2,140 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Keith Haring-inspired Design System
-   Bold primary colors, thick black outlines, energetic hand-drawn feel
+/* Modern Black & White Cartoon Illustration Style
+   Hand-drawn lines, simple shapes, minimal shading
+   Clean and spacious with bold black outlines
+   Playful but sophisticated - comic-book meets productivity
    All colors MUST be HSL.
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Nunito:wght@400;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Comic+Neue:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    /* Keith Haring Primary Palette */
-    --background: 60 30% 96%;
-    --foreground: 0 0% 5%;
+    /* Clean white background */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 5%;
+    --card-foreground: 0 0% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 5%;
+    --popover-foreground: 0 0% 8%;
 
-    /* Vibrant Primary Red */
-    --primary: 0 85% 55%;
+    /* Black primary for bold elements */
+    --primary: 0 0% 8%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 0 80% 65%;
+    --primary-light: 0 0% 20%;
 
-    /* Electric Yellow */
-    --secondary: 50 100% 50%;
-    --secondary-foreground: 0 0% 5%;
+    /* Light gray for secondary */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 8%;
 
-    /* Soft muted for backgrounds */
-    --muted: 60 20% 90%;
-    --muted-foreground: 0 0% 35%;
+    /* Soft muted grays */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Bold Blue Accent */
-    --accent: 220 90% 55%;
+    /* Dark accent */
+    --accent: 0 0% 15%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 220 85% 65%;
+    --accent-light: 0 0% 25%;
 
-    /* Vibrant Green Success */
-    --success: 140 75% 45%;
+    /* Success - slight green tint for feedback */
+    --success: 145 5% 35%;
     --success-foreground: 0 0% 100%;
 
-    /* Hot Pink for special elements */
-    --pink: 330 85% 55%;
+    /* Muted tones for variety */
+    --pink: 0 0% 30%;
     --pink-foreground: 0 0% 100%;
 
-    /* Orange energy */
-    --orange: 25 95% 55%;
+    --orange: 0 0% 25%;
     --orange-foreground: 0 0% 100%;
 
-    --destructive: 0 85% 55%;
+    --destructive: 0 0% 20%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Thick black borders - signature Haring style */
-    --border: 0 0% 5%;
-    --input: 0 0% 5%;
-    --ring: 0 0% 5%;
+    /* Bold black borders */
+    --border: 0 0% 8%;
+    --input: 0 0% 8%;
+    --ring: 0 0% 8%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     
-    /* Custom design tokens */
-    --outline-thick: 4px solid hsl(0 0% 5%);
-    --outline-medium: 3px solid hsl(0 0% 5%);
-    --outline-thin: 2px solid hsl(0 0% 5%);
+    /* Sketch-style design tokens */
+    --sketch-border: 3px solid hsl(0 0% 8%);
+    --sketch-border-thin: 2px solid hsl(0 0% 8%);
+    --sketch-shadow: 4px 4px 0px hsl(0 0% 8%);
+    --sketch-shadow-sm: 2px 2px 0px hsl(0 0% 8%);
+    --sketch-shadow-hover: 6px 6px 0px hsl(0 0% 8%);
     
-    --shadow-pop: 6px 6px 0px hsl(0 0% 5%);
-    --shadow-pop-sm: 4px 4px 0px hsl(0 0% 5%);
-    --shadow-pop-hover: 8px 8px 0px hsl(0 0% 5%);
-    
-    --transition-bounce: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-sketch: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     --transition-smooth: all 0.15s ease-out;
 
-    --sidebar-background: 60 30% 96%;
-    --sidebar-foreground: 0 0% 5%;
-    --sidebar-primary: 0 85% 55%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 8%;
+    --sidebar-primary: 0 0% 8%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 50 100% 50%;
-    --sidebar-accent-foreground: 0 0% 5%;
-    --sidebar-border: 0 0% 5%;
-    --sidebar-ring: 0 0% 5%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 8%;
+    --sidebar-border: 0 0% 8%;
+    --sidebar-ring: 0 0% 8%;
   }
 
   .dark {
-    --background: 240 10% 8%;
-    --foreground: 60 30% 96%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
 
-    --card: 240 10% 12%;
-    --card-foreground: 60 30% 96%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 240 10% 12%;
-    --popover-foreground: 60 30% 96%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
 
-    /* Vibrant Primary Red */
-    --primary: 0 85% 55%;
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 0 80% 65%;
+    --primary: 0 0% 95%;
+    --primary-foreground: 0 0% 5%;
+    --primary-light: 0 0% 85%;
 
-    /* Electric Yellow */
-    --secondary: 50 100% 50%;
-    --secondary-foreground: 0 0% 5%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 240 10% 18%;
-    --muted-foreground: 60 10% 65%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
 
-    /* Bold Blue Accent */
-    --accent: 220 90% 60%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 220 85% 70%;
+    --accent: 0 0% 85%;
+    --accent-foreground: 0 0% 5%;
+    --accent-light: 0 0% 75%;
 
-    --success: 140 75% 50%;
-    --success-foreground: 0 0% 100%;
+    --success: 145 5% 65%;
+    --success-foreground: 0 0% 5%;
 
-    --pink: 330 85% 60%;
-    --pink-foreground: 0 0% 100%;
+    --pink: 0 0% 70%;
+    --pink-foreground: 0 0% 5%;
 
-    --orange: 25 95% 60%;
-    --orange-foreground: 0 0% 100%;
+    --orange: 0 0% 75%;
+    --orange-foreground: 0 0% 5%;
 
-    --destructive: 0 85% 55%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 0% 80%;
+    --destructive-foreground: 0 0% 5%;
 
-    --border: 60 30% 96%;
-    --input: 60 30% 96%;
-    --ring: 60 30% 96%;
+    --border: 0 0% 95%;
+    --input: 0 0% 95%;
+    --ring: 0 0% 95%;
     
-    --shadow-pop: 6px 6px 0px hsl(60 30% 96%);
-    --shadow-pop-sm: 4px 4px 0px hsl(60 30% 96%);
-    --shadow-pop-hover: 8px 8px 0px hsl(60 30% 96%);
+    --sketch-border: 3px solid hsl(0 0% 95%);
+    --sketch-border-thin: 2px solid hsl(0 0% 95%);
+    --sketch-shadow: 4px 4px 0px hsl(0 0% 95%);
+    --sketch-shadow-sm: 2px 2px 0px hsl(0 0% 95%);
+    --sketch-shadow-hover: 6px 6px 0px hsl(0 0% 95%);
 
-    --sidebar-background: 240 10% 10%;
-    --sidebar-foreground: 60 30% 96%;
-    --sidebar-primary: 0 85% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 50 100% 50%;
-    --sidebar-accent-foreground: 0 0% 5%;
-    --sidebar-border: 60 30% 96%;
-    --sidebar-ring: 60 30% 96%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 0% 95%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 95%;
+    --sidebar-ring: 0 0% 95%;
   }
 }
 
@@ -148,159 +146,166 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 
   h1, h2, h3, .font-display {
-    font-family: 'Bangers', cursive;
-    letter-spacing: 0.05em;
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
   }
 
-  .font-marker {
-    font-family: 'Permanent Marker', cursive;
+  .font-sketch {
+    font-family: 'Caveat', cursive;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
   }
 }
 
 @layer components {
-  /* Keith Haring signature thick-border style */
-  .haring-box {
-    @apply border-4 border-foreground bg-card;
-    box-shadow: var(--shadow-pop);
-    transition: var(--transition-bounce);
+  /* Doodle box - hand-drawn look */
+  .doodle-box {
+    @apply border-3 border-foreground bg-card rounded-xl;
+    box-shadow: var(--sketch-shadow);
+    transition: var(--transition-sketch);
   }
   
-  .haring-box:hover {
-    box-shadow: var(--shadow-pop-hover);
+  .doodle-box:hover {
+    box-shadow: var(--sketch-shadow-hover);
     transform: translate(-2px, -2px);
   }
 
-  /* Motion lines - signature Haring energy */
-  .motion-lines {
-    position: relative;
+  /* Sketch card - softer variant */
+  .sketch-card {
+    @apply border-2 border-foreground bg-card rounded-lg;
+    box-shadow: var(--sketch-shadow-sm);
+    transition: var(--transition-smooth);
   }
   
-  .motion-lines::before,
-  .motion-lines::after {
-    content: '';
-    position: absolute;
-    background: hsl(var(--foreground));
-    border-radius: 999px;
+  .sketch-card:hover {
+    box-shadow: var(--sketch-shadow);
+    transform: translate(-1px, -1px);
   }
 
-  /* Wiggly underline effect */
-  .wiggle-underline {
+  /* Hand-drawn wobbly border effect */
+  .wobbly-border {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  }
+
+  /* Comic panel style */
+  .comic-panel {
+    @apply border-3 border-foreground bg-card;
+    border-radius: 4px;
+    box-shadow: var(--sketch-shadow);
+  }
+
+  /* Doodle underline effect */
+  .doodle-underline {
     position: relative;
     display: inline-block;
   }
   
-  .wiggle-underline::after {
+  .doodle-underline::after {
     content: '';
     position: absolute;
-    bottom: -4px;
+    bottom: -2px;
     left: 0;
     right: 0;
-    height: 4px;
-    background: currentColor;
+    height: 3px;
+    background: hsl(var(--foreground));
     border-radius: 2px;
-    transform: scaleX(0);
-    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform: scaleX(0) rotate(-1deg);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   
-  .wiggle-underline:hover::after {
-    transform: scaleX(1);
+  .doodle-underline:hover::after {
+    transform: scaleX(1) rotate(-1deg);
   }
 
-  /* Energetic hover animation */
-  .bounce-hover {
-    transition: var(--transition-bounce);
+  /* Playful hover animation */
+  .sketch-hover {
+    transition: var(--transition-sketch);
   }
   
-  .bounce-hover:hover {
-    transform: scale(1.05) rotate(-1deg);
+  .sketch-hover:hover {
+    transform: scale(1.02) rotate(-0.5deg);
   }
   
-  .bounce-hover:active {
+  .sketch-hover:active {
     transform: scale(0.98);
   }
 
-  /* Pop shadow cards */
-  .pop-card {
-    @apply border-4 border-foreground rounded-lg;
-    box-shadow: var(--shadow-pop);
-    transition: var(--transition-bounce);
+  /* Subtle wiggle animation */
+  @keyframes gentle-wiggle {
+    0%, 100% { transform: rotate(-1deg); }
+    50% { transform: rotate(1deg); }
   }
   
-  .pop-card:hover {
-    box-shadow: var(--shadow-pop-hover);
-    transform: translate(-3px, -3px);
+  .wiggle {
+    animation: gentle-wiggle 3s ease-in-out infinite;
   }
 
-  /* Dancing figure animation */
-  @keyframes dance {
-    0%, 100% { transform: rotate(-3deg); }
-    50% { transform: rotate(3deg); }
+  /* Float animation for decorative elements */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
   }
   
-  .dance {
-    animation: dance 0.5s ease-in-out infinite;
+  .float {
+    animation: float 4s ease-in-out infinite;
   }
 
-  /* Pulse energy animation */
-  @keyframes energy-pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.8; }
-  }
-  
-  .energy-pulse {
-    animation: energy-pulse 1.5s ease-in-out infinite;
-  }
-
-  /* Radiant lines background */
-  .radiant-bg {
+  /* Scribble pattern background */
+  .scribble-bg {
     background-image: 
-      repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 20px,
-        hsl(var(--foreground) / 0.03) 20px,
-        hsl(var(--foreground) / 0.03) 22px
-      );
+      radial-gradient(circle at 20% 50%, hsl(var(--foreground) / 0.02) 1px, transparent 1px),
+      radial-gradient(circle at 80% 50%, hsl(var(--foreground) / 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
   }
 
-  /* Bold color blocks */
-  .color-block-red { @apply bg-primary text-primary-foreground; }
-  .color-block-yellow { @apply bg-secondary text-secondary-foreground; }
-  .color-block-blue { @apply bg-accent text-accent-foreground; }
-  .color-block-green { @apply bg-success text-success-foreground; }
-  .color-block-pink { @apply bg-pink text-pink-foreground; }
-  .color-block-orange { @apply bg-orange text-orange-foreground; }
+  /* Dot grid pattern */
+  .dot-grid {
+    background-image: radial-gradient(hsl(var(--foreground) / 0.08) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Clean divider line */
+  .sketch-divider {
+    @apply h-0.5 bg-foreground rounded-full;
+  }
 }
 
 @layer utilities {
-  /* Thick border utilities */
-  .border-thick {
-    border-width: 4px;
-  }
-  
-  .border-medium {
+  /* Border utilities */
+  .border-sketch {
     border-width: 3px;
   }
-
-  /* Shadow pop utilities */
-  .shadow-pop {
-    box-shadow: var(--shadow-pop);
-  }
   
-  .shadow-pop-sm {
-    box-shadow: var(--shadow-pop-sm);
-  }
-  
-  .shadow-pop-hover:hover {
-    box-shadow: var(--shadow-pop-hover);
+  .border-sketch-thin {
+    border-width: 2px;
   }
 
-  /* Hand-drawn border effect (slight imperfection) */
-  .hand-drawn {
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  /* Shadow utilities */
+  .shadow-sketch {
+    box-shadow: var(--sketch-shadow);
   }
+  
+  .shadow-sketch-sm {
+    box-shadow: var(--sketch-shadow-sm);
+  }
+  
+  .shadow-sketch-hover:hover {
+    box-shadow: var(--sketch-shadow-hover);
+  }
+
+  /* Hand-drawn imperfect border radius */
+  .rounded-sketch {
+    border-radius: 12px 8px 12px 8px;
+  }
+
+  /* Rotations for playful feel */
+  .tilt-1 { transform: rotate(-1deg); }
+  .tilt-2 { transform: rotate(1deg); }
+  .tilt-3 { transform: rotate(-2deg); }
 }
