@@ -118,6 +118,44 @@ export type Database = {
           },
         ]
       }
+      cohort_messages: {
+        Row: {
+          cohort_id: string
+          content: string
+          created_at: string
+          id: string
+          message_type: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          cohort_id: string
+          content: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          cohort_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cohort_messages_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cohort_subjects: {
         Row: {
           cohort_id: string

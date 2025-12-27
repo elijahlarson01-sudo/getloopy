@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Subject from "./pages/Subject";
 import Lesson from "./pages/Lesson";
 import Challenges from "./pages/Challenges";
+import Cohort from "./pages/Cohort";
 import Admin from "./pages/Admin";
 import { AdminRoute } from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/subject/:subjectId" element={<Subject />} />
             <Route path="/lesson/:lessonId" element={<Lesson />} />
             <Route path="/challenges" element={<Challenges />} />
+            <Route path="/cohort" element={<Cohort />} />
             <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

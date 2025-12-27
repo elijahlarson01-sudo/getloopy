@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom, Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart, Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon, Swords, Shield } from "lucide-react";
+import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom, Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart, Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon, Swords, Shield, Users } from "lucide-react";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import WeeklyActivityChart from "@/components/WeeklyActivityChart";
 import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
@@ -253,6 +253,10 @@ const Dashboard = () => {
               <DropdownMenuItem onClick={() => navigate("/challenges")}>
                 <Swords className="w-4 h-4 mr-2" />
                 Challenges
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/cohort")}>
+                <Users className="w-4 h-4 mr-2" />
+                Cohort Chat
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/onboarding?edit=true")}>
                 <Settings className="w-4 h-4 mr-2" />
