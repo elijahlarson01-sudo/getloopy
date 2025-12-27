@@ -159,16 +159,17 @@ const LightningRound = ({
     }, 500);
   }, [showFeedback, timeLeft, questions, currentIndex, score, startTime, onComplete]);
 
-  const currentQuestion = questions[currentIndex];
+  const currentQuestion = questions[currentIndex] || null;
+  const questionId = currentQuestion?.id || null;
   const rawOptions = Array.isArray(currentQuestion?.options) ? currentQuestion.options as string[] : null;
   
   // Shuffle options for each question - memoized by question id (must be before any returns)
   const shuffledOptions = useMemo(() => {
-    if (!rawOptions) return null;
+    if (!rawOptions || !questionId) return null;
     return shuffleArray(rawOptions);
-  }, [currentQuestion?.id]);
+  }, [questionId, rawOptions]);
 
-  if (loading) {
+  if (loading || !currentQuestion) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center">
         <div className="text-center">
