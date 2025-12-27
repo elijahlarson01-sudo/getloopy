@@ -12,7 +12,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom, Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart, Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon, Swords, Shield, Users } from "lucide-react";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import WeeklyActivityChart from "@/components/WeeklyActivityChart";
-import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
 import CohortLeaderboard from "@/components/CohortLeaderboard";
 import type { User } from "@supabase/supabase-js";
 interface UserProgress {
@@ -357,9 +356,8 @@ const Dashboard = () => {
         </div>
 
         {/* Analytics Charts & Leaderboard */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
           <WeeklyActivityChart userId={user.id} />
-          <SubjectBreakdownChart subjects={subjects} subjectProgress={subjectProgress} />
           <CohortLeaderboard userId={user.id} />
         </div>
 
