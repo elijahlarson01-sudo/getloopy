@@ -41,7 +41,7 @@ const SubjectBreakdownChart = ({ subjects, subjectProgress }: SubjectBreakdownCh
 
   if (totalLessons === 0) {
     return (
-      <Card className="p-6 bg-gradient-to-br from-accent/10 via-accent/5 to-primary/5 border-2 border-accent/20 shadow-lg shadow-accent/10 h-full">
+      <Card className="p-6 bg-gradient-to-br from-accent/5 via-accent/[0.02] to-transparent border border-border/50 shadow-sm h-full">
         <h3 className="text-lg font-bold mb-4">Subject Breakdown</h3>
         <div className="h-[200px] flex items-center justify-center text-muted-foreground">
           <p>Complete lessons to see your breakdown!</p>
@@ -51,7 +51,7 @@ const SubjectBreakdownChart = ({ subjects, subjectProgress }: SubjectBreakdownCh
   }
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-accent/10 via-accent/5 to-primary/5 border-2 border-accent/20 shadow-lg shadow-accent/10 h-full">
+    <Card className="p-6 bg-gradient-to-br from-accent/5 via-accent/[0.02] to-transparent border border-border/50 shadow-sm h-full">
       <div className="mb-4">
         <h3 className="text-lg font-bold">Subject Breakdown</h3>
         <p className="text-sm text-muted-foreground">

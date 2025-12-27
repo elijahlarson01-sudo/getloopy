@@ -76,7 +76,7 @@ const WeeklyActivityChart = ({ userId }: WeeklyActivityChartProps) => {
 
   if (loading) {
     return (
-      <Card className="p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-accent/5 border-2 border-primary/20 shadow-lg shadow-primary/10">
+      <Card className="p-6 bg-gradient-to-br from-primary/5 via-primary/[0.02] to-transparent border border-border/50 shadow-sm h-full">
         <div className="h-[200px] flex items-center justify-center">
           <p className="text-muted-foreground">Loading activity...</p>
         </div>
@@ -89,7 +89,7 @@ const WeeklyActivityChart = ({ userId }: WeeklyActivityChartProps) => {
   const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-accent/5 border-2 border-primary/20 shadow-lg shadow-primary/10 h-full">
+    <Card className="p-6 bg-gradient-to-br from-primary/5 via-primary/[0.02] to-transparent border border-border/50 shadow-sm h-full">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-bold">Weekly Activity</h3>
