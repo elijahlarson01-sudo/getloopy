@@ -14,7 +14,6 @@ import { useAdminCheck } from "@/hooks/useAdminCheck";
 import WeeklyActivityChart from "@/components/WeeklyActivityChart";
 import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
 import CohortLeaderboard from "@/components/CohortLeaderboard";
-import ChallengeNotification from "@/components/ChallengeNotification";
 import type { User } from "@supabase/supabase-js";
 interface UserProgress {
   current_streak: number;
@@ -232,9 +231,6 @@ const Dashboard = () => {
       </div>;
   }
   return <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
-      {/* Challenge Notification Popup */}
-      <ChallengeNotification userId={user.id} />
-      
       <header className="border-b border-border bg-card/50 backdrop-blur">
         <div className="container max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-black bg-gradient-to-r from-primary via-primary-light to-accent bg-clip-text text-transparent">

@@ -13,6 +13,7 @@ import Challenges from "./pages/Challenges";
 import Admin from "./pages/Admin";
 import { AdminRoute } from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
+import GlobalChallengeProvider from "./components/GlobalChallengeProvider";
 
 const queryClient = new QueryClient();
 
@@ -22,18 +23,20 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/subject/:subjectId" element={<Subject />} />
-          <Route path="/lesson/:lessonId" element={<Lesson />} />
-          <Route path="/challenges" element={<Challenges />} />
-          <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <GlobalChallengeProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/subject/:subjectId" element={<Subject />} />
+            <Route path="/lesson/:lessonId" element={<Lesson />} />
+            <Route path="/challenges" element={<Challenges />} />
+            <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </GlobalChallengeProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
