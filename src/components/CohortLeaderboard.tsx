@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Users, Trophy, Medal } from "lucide-react";
+import { Users, Trophy, Medal, Swords } from "lucide-react";
+import ChallengeModal from "@/components/ChallengeModal";
 
 interface CohortMember {
   user_id: string;
@@ -18,8 +21,13 @@ interface CohortLeaderboardProps {
 
 const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
   const [members, setMembers] = useState<CohortMember[]>([]);
+  const [cohortId, setCohortId] = useState<string>("");
   const [cohortName, setCohortName] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [userWeeklyPoints, setUserWeeklyPoints] = useState(0);
+  const [challengeModalOpen, setChallengeModalOpen] = useState(false);
+  const [selectedOpponent, setSelectedOpponent] = useState<CohortMember | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCohortMembers = async () => {
@@ -34,6 +42,8 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
         setLoading(false);
         return;
       }
+
+      setCohortId(userOnboarding.cohort_id);
 
       // Get cohort name
       const { data: cohort } = await supabase
@@ -87,11 +97,28 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
       // Sort by weekly points
       membersWithProgress.sort((a, b) => b.weekly_mastery_points - a.weekly_mastery_points);
       setMembers(membersWithProgress);
+      
+      // Set user's weekly points for stake cap
+      const myProgress = membersWithProgress.find(m => m.user_id === userId);
+      if (myProgress) {
+        setUserWeeklyPoints(myProgress.weekly_mastery_points);
+      }
+      
       setLoading(false);
     };
 
     fetchCohortMembers();
   }, [userId]);
+
+  const handleChallengeClick = (member: CohortMember, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedOpponent(member);
+    setChallengeModalOpen(true);
+  };
+
+  const handleChallengeCreated = (challengeId: string) => {
+    navigate(`/challenges?start=${challengeId}`);
+  };
 
   if (loading) {
     return (
@@ -143,14 +170,40 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
                   {member.user_id === userId && <span className="text-primary ml-1">(You)</span>}
                 </p>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-bold text-primary">{member.weekly_mastery_points}</p>
-                <p className="text-xs text-muted-foreground">pts/wk</p>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <p className="text-sm font-bold text-primary">{member.weekly_mastery_points}</p>
+                  <p className="text-xs text-muted-foreground">pts/wk</p>
+                </div>
+                {member.user_id !== userId && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-accent hover:text-accent hover:bg-accent/10"
+                    onClick={(e) => handleChallengeClick(member, e)}
+                  >
+                    <Swords className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
           ))}
         </div>
       </ScrollArea>
+
+      {/* Challenge Modal */}
+      {selectedOpponent && (
+        <ChallengeModal
+          open={challengeModalOpen}
+          onOpenChange={setChallengeModalOpen}
+          opponentId={selectedOpponent.user_id}
+          opponentName={selectedOpponent.full_name || selectedOpponent.email.split("@")[0]}
+          userId={userId}
+          cohortId={cohortId}
+          userWeeklyPoints={userWeeklyPoints}
+          onChallengeCreated={handleChallengeCreated}
+        />
+      )}
     </Card>
   );
 };
