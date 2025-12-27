@@ -247,6 +247,17 @@ const ChallengeResultModal = ({
                 </p>
               </div>
 
+              {/* Double or Nothing Button */}
+              <div className="mb-3">
+                <Button
+                  variant="outline"
+                  className="w-full font-bold text-sm border-accent/30 hover:bg-accent/10"
+                  onClick={() => setRevengeStake(Math.min(challenge.stake_points * 2, maxRevengStake))}
+                >
+                  🎲 Double or Nothing ({Math.min(challenge.stake_points * 2, maxRevengStake)} pts)
+                </Button>
+              </div>
+
               {/* Stake Selector */}
               <div className="flex items-center justify-center gap-4 mb-3">
                 <Button
