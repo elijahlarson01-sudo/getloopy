@@ -67,7 +67,8 @@ const Challenges = () => {
           .eq("id", startChallengeId)
           .single();
         
-        if (challenge && challenge.challenger_user_id === session.user.id) {
+        // Allow both challenger and opponent to auto-start
+        if (challenge && (challenge.challenger_user_id === session.user.id || challenge.opponent_user_id === session.user.id)) {
           // Check if user already played
           const { data: attempt } = await supabase
             .from("challenge_attempts")
