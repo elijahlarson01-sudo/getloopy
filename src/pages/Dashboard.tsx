@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom, Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart, Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon, Swords } from "lucide-react";
+import { Flame, Brain, LogOut, Database, BarChart3, Code, Globe, BookOpen, Palette, Calculator, Leaf, TrendingUp, Menu, Settings, GraduationCap, Pencil, Atom, Lightbulb, FlaskConical, MousePointerClick, Megaphone, Cog, ShoppingCart, Target, Truck, Brush, Dna, BookMarked, Pi, Zap, Languages, User as UserIcon, Swords, Shield } from "lucide-react";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 import WeeklyActivityChart from "@/components/WeeklyActivityChart";
 import SubjectBreakdownChart from "@/components/SubjectBreakdownChart";
 import CohortLeaderboard from "@/components/CohortLeaderboard";
@@ -66,6 +67,7 @@ const Dashboard = () => {
   const [editNameOpen, setEditNameOpen] = useState(false);
   const [editingName, setEditingName] = useState("");
   const [savingName, setSavingName] = useState(false);
+  const { isAdmin } = useAdminCheck();
   const navigate = useNavigate();
   const {
     toast
@@ -256,6 +258,12 @@ const Dashboard = () => {
                 <Settings className="w-4 h-4 mr-2" />
                 Edit Preferences
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => navigate("/admin")}>
+                  <Shield className="w-4 h-4 mr-2" />
+                  Admin Dashboard
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-2" />

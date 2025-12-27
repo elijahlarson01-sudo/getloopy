@@ -330,6 +330,35 @@ export type Database = {
         }
         Relationships: []
       }
+      university_domains: {
+        Row: {
+          created_at: string | null
+          domain: string
+          id: string
+          university_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          domain: string
+          id?: string
+          university_id: string
+        }
+        Update: {
+          created_at?: string | null
+          domain?: string
+          id?: string
+          university_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "university_domains_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_module_progress: {
         Row: {
           accuracy_percentage: number
@@ -483,6 +512,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_subject_interests: {
         Row: {
           created_at: string | null
@@ -551,8 +601,16 @@ export type Database = {
     }
     Functions: {
       get_user_cohort_id: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "user"
       challenge_status: "pending" | "completed"
     }
     CompositeTypes: {
@@ -681,6 +739,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "user"],
       challenge_status: ["pending", "completed"],
     },
   },

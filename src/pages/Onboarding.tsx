@@ -58,6 +58,8 @@ const Onboarding = () => {
   const [cohortSubjects, setCohortSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [suggestedUniversity, setSuggestedUniversity] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -69,6 +71,24 @@ const Onboarding = () => {
         return;
       }
       setUserId(session.user.id);
+      setUserEmail(session.user.email || null);
+
+      // Auto-detect university from email domain
+      if (session.user.email && !isEditMode) {
+        const emailDomain = session.user.email.split("@")[1];
+        if (emailDomain) {
+          const { data: domainMatch } = await supabase
+            .from("university_domains")
+            .select("university_id")
+            .eq("domain", emailDomain)
+            .maybeSingle();
+          
+          if (domainMatch) {
+            setSuggestedUniversity(domainMatch.university_id);
+            setSelectedUniversity(domainMatch.university_id);
+          }
+        }
+      }
 
       if (isEditMode) {
         const { data: onboarding } = await supabase
@@ -363,7 +383,9 @@ const Onboarding = () => {
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-bold text-foreground mb-2">Select your university</h2>
-              <p className="text-muted-foreground text-sm">Find your school to join your cohort</p>
+              <p className="text-muted-foreground text-sm">
+                {suggestedUniversity ? "We detected your university from your email!" : "Find your school to join your cohort"}
+              </p>
             </div>
             <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto">
               {universities.map(uni => (
