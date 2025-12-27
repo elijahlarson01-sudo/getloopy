@@ -22,6 +22,7 @@ interface Challenge {
   is_draw: boolean;
   created_at: string;
   completed_at: string | null;
+  previous_challenge_id?: string | null;
   challenger_name?: string;
   opponent_name?: string;
   subject_name?: string;
@@ -46,6 +47,7 @@ const Challenges = () => {
   const [showCountdown, setShowCountdown] = useState(false);
   const [playingRound, setPlayingRound] = useState(false);
   const [resultChallenge, setResultChallenge] = useState<Challenge | null>(null);
+  const [weeklyPoints, setWeeklyPoints] = useState(100);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -59,6 +61,7 @@ const Challenges = () => {
       }
       setUser(session.user);
       await fetchChallenges(session.user.id);
+      await fetchWeeklyPoints(session.user.id);
 
       // Check if we need to start a challenge immediately
       const startChallengeId = searchParams.get("start");
@@ -89,6 +92,17 @@ const Challenges = () => {
 
     checkAuth();
   }, [navigate, searchParams]);
+
+  const fetchWeeklyPoints = async (userId: string) => {
+    const { data } = await supabase
+      .from("user_progress")
+      .select("weekly_mastery_points")
+      .eq("user_id", userId)
+      .single();
+    if (data) {
+      setWeeklyPoints(data.weekly_mastery_points || 100);
+    }
+  };
 
   const fetchChallenges = async (userId: string) => {
     setLoading(true);
@@ -330,23 +344,26 @@ const Challenges = () => {
     }
   };
 
-  const handleRematch = async (challenge: Challenge) => {
+  const handleRematch = async (challenge: Challenge, previousChallengeId?: string, customStake?: number) => {
     // Create a new challenge with same settings but swapped roles
+    const opponentId = challenge.challenger_user_id === user.id 
+      ? challenge.opponent_user_id 
+      : challenge.challenger_user_id;
+
     const { data: newChallenge, error } = await supabase
       .from("challenges")
       .insert({
         challenger_user_id: user.id,
-        opponent_user_id: challenge.challenger_user_id === user.id 
-          ? challenge.opponent_user_id 
-          : challenge.challenger_user_id,
+        opponent_user_id: opponentId,
         cohort_id: (await supabase
           .from("user_onboarding")
           .select("cohort_id")
           .eq("user_id", user.id)
           .single()).data?.cohort_id,
         subject_id: challenge.subject_id,
-        stake_points: challenge.stake_points,
+        stake_points: customStake || challenge.stake_points,
         status: "pending",
+        previous_challenge_id: previousChallengeId || null,
       })
       .select()
       .single();
@@ -354,18 +371,23 @@ const Challenges = () => {
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to create rematch.",
+        description: "Failed to create challenge.",
         variant: "destructive",
       });
       return;
     }
 
+    const isRevenge = !!previousChallengeId;
     toast({
-      title: "Rematch created!",
-      description: "Get ready for another round!",
+      title: isRevenge ? "Revenge match created!" : "Rematch created!",
+      description: isRevenge ? "Time for payback!" : "Get ready for another round!",
     });
 
     navigate(`/challenges?start=${newChallenge.id}`);
+  };
+
+  const handleRevenge = (challenge: Challenge, stakePoints: number) => {
+    handleRematch(challenge, challenge.id, stakePoints);
   };
 
   const canPlay = (challenge: Challenge) => {
@@ -564,7 +586,9 @@ const Challenges = () => {
           onOpenChange={(open) => !open && setResultChallenge(null)}
           challenge={resultChallenge}
           userId={user?.id}
+          weeklyPoints={weeklyPoints}
           onRematch={() => handleRematch(resultChallenge)}
+          onRevenge={(stakePoints) => handleRevenge(resultChallenge, stakePoints)}
         />
       )}
     </div>

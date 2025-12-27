@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Swords, Zap, Trophy, X } from "lucide-react";
+import { Swords, Zap, Trophy, X, Flame } from "lucide-react";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+
 interface ChallengeNotificationProps {
   userId: string;
 }
@@ -13,6 +14,7 @@ interface IncomingChallenge {
   challenger_name: string;
   subject_name: string;
   stake_points: number;
+  is_revenge: boolean;
 }
 
 const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
@@ -49,8 +51,9 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
 
           const challengerName = profileRes.data?.full_name || profileRes.data?.email?.split("@")[0] || "Someone";
           const subjectName = subjectRes.data?.name || "Unknown Subject";
+          const isRevenge = !!newChallenge.previous_challenge_id;
 
-          console.log("Setting challenge state:", { challengerName, subjectName, stake_points: newChallenge.stake_points });
+          console.log("Setting challenge state:", { challengerName, subjectName, stake_points: newChallenge.stake_points, isRevenge });
 
           // Play notification sound
           playChallengeReceived();
@@ -59,7 +62,8 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
             id: newChallenge.id,
             challenger_name: challengerName,
             subject_name: subjectName,
-            stake_points: newChallenge.stake_points
+            stake_points: newChallenge.stake_points,
+            is_revenge: isRevenge
           });
           setOpen(true);
         }
@@ -112,20 +116,30 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
         </button>
         
         {/* Header with icon */}
-        <div className="bg-gradient-to-br from-accent/20 to-primary/20 p-8 text-center">
-          <div className="w-24 h-24 mx-auto rounded-full bg-accent/20 flex items-center justify-center mb-4 animate-pulse">
-            <Swords className="w-12 h-12 text-accent" />
+        <div className={`p-8 text-center ${challenge.is_revenge ? 'bg-gradient-to-br from-destructive/20 to-accent/20' : 'bg-gradient-to-br from-accent/20 to-primary/20'}`}>
+          {challenge.is_revenge && (
+            <div className="inline-flex items-center gap-2 bg-destructive/20 text-destructive px-3 py-1 rounded-full text-sm font-bold mb-4">
+              <Flame className="w-4 h-4" />
+              Revenge Match
+            </div>
+          )}
+          <div className={`w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-4 animate-pulse ${challenge.is_revenge ? 'bg-destructive/20' : 'bg-accent/20'}`}>
+            {challenge.is_revenge ? (
+              <Flame className="w-12 h-12 text-destructive" />
+            ) : (
+              <Swords className="w-12 h-12 text-accent" />
+            )}
           </div>
           <h2 className="text-3xl font-black text-foreground">
-            You've Been Challenged!
+            {challenge.is_revenge ? "They Want Revenge!" : "You've Been Challenged!"}
           </h2>
         </div>
         
         {/* Content */}
         <div className="p-6 space-y-5">
           <p className="text-center text-xl">
-            <span className="text-accent font-bold">{challenge.challenger_name}</span>
-            {" "}wants to battle you!
+            <span className={challenge.is_revenge ? "text-destructive font-bold" : "text-accent font-bold"}>{challenge.challenger_name}</span>
+            {challenge.is_revenge ? " is coming for payback!" : " wants to battle you!"}
           </p>
           
           {/* Challenge details */}
