@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Zap, Clock, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 interface Question {
   id: string;
   question_text: string;
@@ -39,6 +39,7 @@ const LightningRound = ({
   const [loading, setLoading] = useState(true);
   const [startTime] = useState(Date.now());
   const { toast } = useToast();
+  const { playCorrect, playIncorrect } = useSoundEffects();
 
   // Fetch questions for the subject
   useEffect(() => {
@@ -124,6 +125,9 @@ const LightningRound = ({
 
     if (isCorrect) {
       setScore((prev) => prev + 1);
+      playCorrect();
+    } else {
+      playIncorrect();
     }
 
     // Brief feedback then move to next

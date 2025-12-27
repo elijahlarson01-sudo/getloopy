@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Swords, Zap, Trophy, X } from "lucide-react";
-
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 interface ChallengeNotificationProps {
   userId: string;
 }
@@ -19,6 +19,7 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
   const [challenge, setChallenge] = useState<IncomingChallenge | null>(null);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { playChallengeReceived } = useSoundEffects();
 
   useEffect(() => {
     if (!userId) return;
@@ -50,6 +51,9 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
           const subjectName = subjectRes.data?.name || "Unknown Subject";
 
           console.log("Setting challenge state:", { challengerName, subjectName, stake_points: newChallenge.stake_points });
+
+          // Play notification sound
+          playChallengeReceived();
 
           setChallenge({
             id: newChallenge.id,
