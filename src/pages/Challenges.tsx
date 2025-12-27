@@ -305,20 +305,29 @@ const Challenges = () => {
       await updatePointsManually(winnerId, loserId, challenge.stake_points);
     }
 
-    const myScore = user?.id === challenge.challenger_user_id 
-      ? challengerAttempt.score 
-      : opponentAttempt.score;
-    const theirScore = user?.id === challenge.challenger_user_id 
-      ? opponentAttempt.score 
-      : challengerAttempt.score;
+    // Build enriched challenge for result modal
+    const myAttempt = user?.id === challenge.challenger_user_id ? challengerAttempt : opponentAttempt;
+    const theirAttempt = user?.id === challenge.challenger_user_id ? opponentAttempt : challengerAttempt;
 
-    if (isDraw) {
-      toast({ title: "It's a draw!", description: `Both scored ${myScore} points.` });
-    } else if (winnerId === user?.id) {
-      toast({ title: "You won! 🎉", description: `+${challenge.stake_points} points` });
-    } else {
-      toast({ title: "You lost", description: `-${challenge.stake_points} points` });
-    }
+    const enrichedChallenge: Challenge = {
+      ...challenge,
+      winner_user_id: winnerId,
+      is_draw: isDraw,
+      status: "completed",
+      my_attempt: {
+        score: myAttempt.score,
+        questions_answered: myAttempt.questions_answered,
+        seconds_used: Number(myAttempt.seconds_used),
+      },
+      opponent_attempt: {
+        score: theirAttempt.score,
+        questions_answered: theirAttempt.questions_answered,
+        seconds_used: Number(theirAttempt.seconds_used),
+      },
+    };
+
+    // Show the result modal
+    setResultChallenge(enrichedChallenge);
   };
 
   const updatePointsManually = async (winnerId: string, loserId: string, points: number) => {
