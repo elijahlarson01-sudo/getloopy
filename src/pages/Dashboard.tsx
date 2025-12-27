@@ -307,19 +307,21 @@ const Dashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <Card className="p-8 bg-gradient-to-br from-accent/10 to-accent/5 border-2 border-accent/20">
+          <Card className="p-8 bg-gradient-to-br from-accent/15 via-accent/10 to-primary/5 border-2 border-accent/30 shadow-lg shadow-accent/10 hover:shadow-xl hover:shadow-accent/20 transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                   Current Streak
                 </p>
-                <h3 className="text-5xl font-black text-foreground mt-1">
+                <h3 className="text-5xl font-black text-foreground mt-1 bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
                   {userProgress.current_streak}
                 </h3>
               </div>
               <div className="relative">
-                <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full" />
-                <Flame className="w-16 h-16 text-accent relative z-10" />
+                <div className="absolute inset-0 bg-accent/30 blur-2xl rounded-full animate-pulse" />
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center backdrop-blur-sm border border-accent/20">
+                  <Flame className="w-10 h-10 text-accent" />
+                </div>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -327,19 +329,21 @@ const Dashboard = () => {
             </p>
           </Card>
 
-          <Card className="p-8 bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20">
+          <Card className="p-8 bg-gradient-to-br from-primary/15 via-primary/10 to-accent/5 border-2 border-primary/30 shadow-lg shadow-primary/10 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                   Weekly Points
                 </p>
-                <h3 className="text-5xl font-black text-foreground mt-1">
+                <h3 className="text-5xl font-black text-foreground mt-1 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   {userProgress.weekly_mastery_points || 0}
                 </h3>
               </div>
               <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
-                <Brain className="w-16 h-16 text-primary relative z-10" />
+                <div className="absolute inset-0 bg-primary/30 blur-2xl rounded-full animate-pulse" />
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center backdrop-blur-sm border border-primary/20">
+                  <Brain className="w-10 h-10 text-primary" />
+                </div>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -350,9 +354,15 @@ const Dashboard = () => {
 
         {/* Analytics Charts & Leaderboard */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <WeeklyActivityChart userId={user.id} />
-          <SubjectBreakdownChart subjects={subjects} subjectProgress={subjectProgress} />
-          <CohortLeaderboard userId={user.id} />
+          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl p-1 shadow-lg shadow-primary/5">
+            <WeeklyActivityChart userId={user.id} />
+          </div>
+          <div className="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent rounded-2xl p-1 shadow-lg shadow-accent/5">
+            <SubjectBreakdownChart subjects={subjects} subjectProgress={subjectProgress} />
+          </div>
+          <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent rounded-2xl p-1 shadow-lg shadow-primary/5">
+            <CohortLeaderboard userId={user.id} />
+          </div>
         </div>
 
         {/* Subjects */}
@@ -365,16 +375,17 @@ const Dashboard = () => {
             </Button>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
-            {subjects.map(subject => {
+            {subjects.map((subject, index) => {
             const IconComponent = iconMap[subject.icon] || Code;
             const progress = subjectProgress[subject.id];
             const masteryLevel = progress?.mastery_level || 0;
             const lessonsCompleted = progress?.lessons_completed || 0;
             const accuracy = progress?.accuracy_percentage || 0;
-            return <Card key={subject.id} className="p-6 hover:shadow-lg transition-all border-2 hover:border-primary/30 cursor-pointer" onClick={() => handleSubjectClick(subject.id)}>
+            const isEven = index % 2 === 0;
+            return <Card key={subject.id} className={`p-6 hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/40 cursor-pointer hover:scale-[1.02] ${isEven ? 'bg-gradient-to-br from-primary/10 via-primary/5 to-accent/5' : 'bg-gradient-to-br from-accent/10 via-accent/5 to-primary/5'} shadow-lg ${isEven ? 'shadow-primary/10' : 'shadow-accent/10'}`} onClick={() => handleSubjectClick(subject.id)}>
                   <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-${subject.color}/20 to-${subject.color}/10 flex items-center justify-center flex-shrink-0`}>
-                      <IconComponent className={`w-6 h-6 text-${subject.color}`} />
+                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${isEven ? 'from-primary/30 to-primary/10 border-primary/20' : 'from-accent/30 to-accent/10 border-accent/20'} flex items-center justify-center flex-shrink-0 border backdrop-blur-sm shadow-inner`}>
+                      <IconComponent className={`w-7 h-7 ${isEven ? 'text-primary' : 'text-accent'}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-xl font-bold mb-1">{subject.name}</h4>
@@ -384,13 +395,13 @@ const Dashboard = () => {
                       {progress ? <>
                           <Progress value={masteryLevel} className="h-2 mb-2" />
                           <div className="flex gap-4 text-xs text-muted-foreground">
-                            <span>Level {masteryLevel}</span>
+                            <span className="font-medium">Level {masteryLevel}</span>
                             <span>•</span>
                             <span>{lessonsCompleted} lessons</span>
                             <span>•</span>
                             <span>{accuracy}% accuracy</span>
                           </div>
-                        </> : <p className="text-sm text-muted-foreground">
+                        </> : <p className="text-sm text-muted-foreground font-medium">
                           Start learning →
                         </p>}
                     </div>
