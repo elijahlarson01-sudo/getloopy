@@ -112,53 +112,53 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
         </button>
         
         {/* Header with icon */}
-        <div className="bg-gradient-to-br from-accent/20 to-primary/20 p-6 text-center">
-          <div className="w-20 h-20 mx-auto rounded-full bg-accent/20 flex items-center justify-center mb-4 animate-pulse">
-            <Swords className="w-10 h-10 text-accent" />
+        <div className="bg-gradient-to-br from-accent/20 to-primary/20 p-8 text-center">
+          <div className="w-24 h-24 mx-auto rounded-full bg-accent/20 flex items-center justify-center mb-4 animate-pulse">
+            <Swords className="w-12 h-12 text-accent" />
           </div>
-          <h2 className="text-2xl font-black text-foreground">
+          <h2 className="text-3xl font-black text-foreground">
             You've Been Challenged!
           </h2>
         </div>
         
         {/* Content */}
-        <div className="p-6 space-y-4">
-          <p className="text-center text-lg">
+        <div className="p-6 space-y-5">
+          <p className="text-center text-xl">
             <span className="text-accent font-bold">{challenge.challenger_name}</span>
             {" "}wants to battle you!
           </p>
           
           {/* Challenge details */}
-          <div className="bg-muted/50 rounded-xl p-4 space-y-3">
+          <div className="bg-muted/50 rounded-xl p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Subject</span>
-              <span className="font-semibold">{challenge.subject_name}</span>
+              <span className="text-muted-foreground text-base">Subject</span>
+              <span className="font-semibold text-lg">{challenge.subject_name}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Wager</span>
-              <span className="font-bold text-accent flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
+              <span className="text-muted-foreground text-base">Wager</span>
+              <span className="font-bold text-accent flex items-center gap-2 text-lg">
+                <Trophy className="w-6 h-6" />
                 {challenge.stake_points} points
               </span>
             </div>
           </div>
 
-          <p className="text-sm text-center text-muted-foreground">
+          <p className="text-base text-center text-muted-foreground">
             Win to claim the points, lose and they're gone!
           </p>
         </div>
         
         {/* Actions */}
         <div className="p-6 pt-0 flex flex-col gap-3">
-          <Button onClick={handlePlayNow} size="lg" className="w-full gap-2 text-lg font-bold">
-            <Zap className="w-5 h-5" />
+          <Button onClick={handlePlayNow} size="lg" className="w-full gap-2 text-xl font-bold h-14">
+            <Zap className="w-6 h-6" />
             Play Now
           </Button>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={handleDismiss} className="flex-1">
+            <Button variant="outline" onClick={handleDismiss} className="flex-1 text-base">
               Later
             </Button>
-            <Button variant="outline" onClick={handleViewChallenges} className="flex-1">
+            <Button variant="outline" onClick={handleViewChallenges} className="flex-1 text-base">
               View Challenges
             </Button>
           </div>
