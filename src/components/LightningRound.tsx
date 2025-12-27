@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,12 +6,23 @@ import { Progress } from "@/components/ui/progress";
 import { Zap, Clock, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+
 interface Question {
   id: string;
   question_text: string;
   options: unknown;
   correct_answer: string;
 }
+
+// Shuffle array using Fisher-Yates algorithm
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 interface LightningRoundProps {
   challengeId: string;
@@ -161,7 +172,15 @@ const LightningRound = ({
 
   const currentQuestion = questions[currentIndex];
   const progress = (timeLeft / ROUND_DURATION) * 100;
-  const options = Array.isArray(currentQuestion?.options) ? currentQuestion.options as string[] : null;
+  const rawOptions = Array.isArray(currentQuestion?.options) ? currentQuestion.options as string[] : null;
+  
+  // Shuffle options for each question - memoized by question id
+  const shuffledOptions = useMemo(() => {
+    if (!rawOptions) return null;
+    return shuffleArray(rawOptions);
+  }, [currentQuestion?.id]);
+  
+  const options = shuffledOptions;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 p-4">

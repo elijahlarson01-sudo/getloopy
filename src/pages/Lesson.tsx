@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+// Shuffle array using Fisher-Yates algorithm
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 interface Module {
   id: string;
@@ -291,6 +301,12 @@ const Lesson = () => {
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
+  // Shuffle options for each question - memoized by question id and index
+  const shuffledOptions = useMemo(() => {
+    if (!currentQuestion?.options) return undefined;
+    return shuffleArray(currentQuestion.options);
+  }, [currentQuestion?.id]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
       <header className="border-b border-border bg-card/50 backdrop-blur">
@@ -326,7 +342,7 @@ const Lesson = () => {
 
           {currentQuestion.question_type === "multiple_choice" ? (
             <div className="space-y-3">
-              {currentQuestion.options?.map((option, index) => (
+              {shuffledOptions?.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => !showFeedback && setSelectedOption(option)}
@@ -337,7 +353,12 @@ const Lesson = () => {
                       : "border-border hover:border-primary/50"
                   } ${showFeedback ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
                 >
-                  {option}
+                  <span className="flex items-center gap-3">
+                    <span className="w-6 h-6 rounded-full border-2 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    <span>{option}</span>
+                  </span>
                 </button>
               ))}
             </div>
