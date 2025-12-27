@@ -159,6 +159,15 @@ const LightningRound = ({
     }, 500);
   }, [showFeedback, timeLeft, questions, currentIndex, score, startTime, onComplete]);
 
+  const currentQuestion = questions[currentIndex];
+  const rawOptions = Array.isArray(currentQuestion?.options) ? currentQuestion.options as string[] : null;
+  
+  // Shuffle options for each question - memoized by question id (must be before any returns)
+  const shuffledOptions = useMemo(() => {
+    if (!rawOptions) return null;
+    return shuffleArray(rawOptions);
+  }, [currentQuestion?.id]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center">
@@ -170,16 +179,7 @@ const LightningRound = ({
     );
   }
 
-  const currentQuestion = questions[currentIndex];
   const progress = (timeLeft / ROUND_DURATION) * 100;
-  const rawOptions = Array.isArray(currentQuestion?.options) ? currentQuestion.options as string[] : null;
-  
-  // Shuffle options for each question - memoized by question id
-  const shuffledOptions = useMemo(() => {
-    if (!rawOptions) return null;
-    return shuffleArray(rawOptions);
-  }, [currentQuestion?.id]);
-  
   const options = shuffledOptions;
 
   return (
