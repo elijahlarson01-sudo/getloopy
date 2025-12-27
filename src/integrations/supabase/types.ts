@@ -64,6 +64,7 @@ export type Database = {
           id: string
           is_draw: boolean
           opponent_user_id: string
+          previous_challenge_id: string | null
           stake_points: number
           status: Database["public"]["Enums"]["challenge_status"]
           subject_id: string
@@ -78,6 +79,7 @@ export type Database = {
           id?: string
           is_draw?: boolean
           opponent_user_id: string
+          previous_challenge_id?: string | null
           stake_points: number
           status?: Database["public"]["Enums"]["challenge_status"]
           subject_id: string
@@ -92,6 +94,7 @@ export type Database = {
           id?: string
           is_draw?: boolean
           opponent_user_id?: string
+          previous_challenge_id?: string | null
           stake_points?: number
           status?: Database["public"]["Enums"]["challenge_status"]
           subject_id?: string
@@ -99,6 +102,13 @@ export type Database = {
           winner_user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "challenges_previous_challenge_id_fkey"
+            columns: ["previous_challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "challenges_subject_id_fkey"
             columns: ["subject_id"]
