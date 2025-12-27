@@ -36,25 +36,27 @@ interface ChallengeResultModalProps {
 }
 
 const winMessages = [
-  "Absolutely crushed it! 🔥",
-  "Victory is yours!",
-  "Brilliant performance!",
-  "You're on fire!",
-  "Champion material!",
+  "Absolutely crushed it!",
+  "They never stood a chance.",
+  "That was almost unfair... for them.",
+  "You're built different.",
+  "Flawless victory. Chef's kiss.",
+  "Add that to the highlight reel.",
 ];
 
 const loseMessages = [
-  "They got lucky.",
-  "Run it back.",
-  "Redemption arc loading…",
-  "Time to settle the score.",
-  "Not over yet.",
+  "That could have been... better.",
+  "We don't talk about this one.",
+  "A learning experience, let's call it.",
+  "Plot twist: you're the underdog now.",
+  "Time to hit the books, champ.",
+  "The comeback story starts here.",
 ];
 
 const drawMessages = [
-  "Evenly matched!",
-  "A battle of equals",
-  "Too close to call!",
+  "A draw? How anticlimactic.",
+  "Neither of you wanted it enough.",
+  "The universe couldn't pick a winner.",
 ];
 
 const revengeTaglines = [
