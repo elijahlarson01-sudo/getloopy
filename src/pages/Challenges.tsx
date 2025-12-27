@@ -457,24 +457,24 @@ const Challenges = () => {
                 <div className="space-y-4">
                   {pendingChallenges.filter(c => canPlay(c)).map(challenge => (
                     <Card key={challenge.id} className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                            <Swords className="w-5 h-5 text-accent" />
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className="w-9 h-9 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                            <Swords className="w-4 h-4 text-accent" />
                           </div>
-                          <div>
-                            <p className="font-medium">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-sm truncate">
                               {challenge.challenger_user_id === user?.id 
                                 ? `vs ${challenge.opponent_name}`
                                 : `${challenge.challenger_name} challenged you`
                               }
                             </p>
-                            <p className="text-sm text-muted-foreground">
-                              {challenge.subject_name} • {challenge.stake_points} pts at stake
+                            <p className="text-xs text-muted-foreground truncate">
+                              {challenge.subject_name} • {challenge.stake_points} pts
                             </p>
                           </div>
                         </div>
-                        <Button onClick={() => handlePlayChallenge(challenge)}>
+                        <Button size="sm" onClick={() => handlePlayChallenge(challenge)} className="flex-shrink-0">
                           Play
                         </Button>
                       </div>
@@ -500,23 +500,23 @@ const Challenges = () => {
                       className="p-4 cursor-pointer hover:border-primary/30 transition-colors"
                       onClick={() => setResultChallenge(challenge)}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                           {getResultIcon(challenge)}
-                          <div>
-                            <p className="font-medium">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-sm truncate">
                               {challenge.challenger_user_id === user?.id 
                                 ? `vs ${challenge.opponent_name}`
                                 : `vs ${challenge.challenger_name}`
                               }
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs text-muted-foreground truncate">
                               {challenge.subject_name} • {getResultText(challenge)}
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className={`font-bold ${
+                        <div className="text-right flex-shrink-0">
+                          <p className={`font-bold text-sm ${
                             challenge.winner_user_id === user?.id 
                               ? 'text-success' 
                               : challenge.is_draw 

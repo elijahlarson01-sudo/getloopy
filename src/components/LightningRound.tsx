@@ -187,14 +187,16 @@ const LightningRound = ({
         </div>
 
         {/* Question Card */}
-        <Card className="p-6 mb-6">
+        <Card className="p-4 sm:p-6 mb-6">
           <p className="text-xs text-muted-foreground mb-2">
             Question {currentIndex + 1} of {questions.length}
           </p>
-          <h3 className="text-xl font-bold mb-6">{currentQuestion?.question_text}</h3>
+          <h3 className="text-base sm:text-lg font-bold mb-4 leading-tight line-clamp-3">
+            {currentQuestion?.question_text}
+          </h3>
 
           {/* Options */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             {options?.map((option, idx) => {
               const isSelected = selectedAnswer === option;
               const isCorrect = option === currentQuestion?.correct_answer;
@@ -205,7 +207,7 @@ const LightningRound = ({
                 <Button
                   key={idx}
                   variant="outline"
-                  className={`w-full justify-start text-left h-auto py-4 px-4 ${
+                  className={`w-full justify-start text-left h-auto py-3 px-3 text-sm leading-snug whitespace-normal ${
                     showCorrect
                       ? "border-success bg-success/10 text-success"
                       : showWrong
@@ -217,13 +219,13 @@ const LightningRound = ({
                   onClick={() => handleAnswer(option)}
                   disabled={showFeedback}
                 >
-                  <span className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold">
+                  <span className="flex items-center gap-2 w-full">
+                    <span className="w-5 h-5 rounded-full border flex items-center justify-center text-xs font-bold flex-shrink-0">
                       {String.fromCharCode(65 + idx)}
                     </span>
-                    <span className="flex-1">{option}</span>
-                    {showCorrect && <CheckCircle className="w-5 h-5" />}
-                    {showWrong && <XCircle className="w-5 h-5" />}
+                    <span className="flex-1 break-words">{option}</span>
+                    {showCorrect && <CheckCircle className="w-4 h-4 flex-shrink-0" />}
+                    {showWrong && <XCircle className="w-4 h-4 flex-shrink-0" />}
                   </span>
                 </Button>
               );
