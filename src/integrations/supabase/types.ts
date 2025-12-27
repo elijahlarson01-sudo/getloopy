@@ -14,6 +14,100 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenge_attempts: {
+        Row: {
+          challenge_id: string
+          completed_at: string
+          created_at: string
+          id: string
+          questions_answered: number
+          score: number
+          seconds_used: number
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string
+          created_at?: string
+          id?: string
+          questions_answered?: number
+          score?: number
+          seconds_used?: number
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string
+          created_at?: string
+          id?: string
+          questions_answered?: number
+          score?: number
+          seconds_used?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_attempts_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges: {
+        Row: {
+          challenger_user_id: string
+          cohort_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_draw: boolean
+          opponent_user_id: string
+          stake_points: number
+          status: Database["public"]["Enums"]["challenge_status"]
+          subject_id: string
+          updated_at: string
+          winner_user_id: string | null
+        }
+        Insert: {
+          challenger_user_id: string
+          cohort_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_draw?: boolean
+          opponent_user_id: string
+          stake_points: number
+          status?: Database["public"]["Enums"]["challenge_status"]
+          subject_id: string
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Update: {
+          challenger_user_id?: string
+          cohort_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_draw?: boolean
+          opponent_user_id?: string
+          stake_points?: number
+          status?: Database["public"]["Enums"]["challenge_status"]
+          subject_id?: string
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cohort_subjects: {
         Row: {
           cohort_id: string
@@ -459,7 +553,7 @@ export type Database = {
       get_user_cohort_id: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      challenge_status: "pending" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -586,6 +680,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      challenge_status: ["pending", "completed"],
+    },
   },
 } as const

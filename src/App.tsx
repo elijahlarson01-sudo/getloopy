@@ -9,6 +9,7 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Subject from "./pages/Subject";
 import Lesson from "./pages/Lesson";
+import Challenges from "./pages/Challenges";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/subject/:subjectId" element={<Subject />} />
           <Route path="/lesson/:lessonId" element={<Lesson />} />
+          <Route path="/challenges" element={<Challenges />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
