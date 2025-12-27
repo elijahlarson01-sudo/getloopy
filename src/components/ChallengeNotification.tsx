@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Swords, Zap, Trophy } from "lucide-react";
+import { Swords, Zap, Trophy, X } from "lucide-react";
 
 interface ChallengeNotificationProps {
   userId: string;
@@ -22,9 +21,13 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!userId) return;
+
+    console.log("Setting up challenge notification listener for user:", userId);
+
     // Subscribe to new challenges where this user is the opponent
     const channel = supabase
-      .channel('challenge-notifications')
+      .channel(`challenge-notifications-${userId}`)
       .on(
         'postgres_changes',
         {
@@ -34,6 +37,7 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
           filter: `opponent_user_id=eq.${userId}`
         },
         async (payload) => {
+          console.log("Challenge notification received:", payload);
           const newChallenge = payload.new as any;
           
           // Fetch challenger name and subject
@@ -45,6 +49,8 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
           const challengerName = profileRes.data?.full_name || profileRes.data?.email?.split("@")[0] || "Someone";
           const subjectName = subjectRes.data?.name || "Unknown Subject";
 
+          console.log("Setting challenge state:", { challengerName, subjectName, stake_points: newChallenge.stake_points });
+
           setChallenge({
             id: newChallenge.id,
             challenger_name: challengerName,
@@ -54,9 +60,12 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
           setOpen(true);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Challenge notification channel status:", status);
+      });
 
     return () => {
+      console.log("Cleaning up challenge notification listener");
       supabase.removeChannel(channel);
     };
   }, [userId]);
@@ -78,59 +87,80 @@ const ChallengeNotification = ({ userId }: ChallengeNotificationProps) => {
     setChallenge(null);
   };
 
-  if (!challenge) return null;
+  if (!open || !challenge) return null;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
-              <Swords className="w-6 h-6 text-accent" />
-            </div>
-            <DialogTitle className="text-xl">Challenge Received!</DialogTitle>
-          </div>
-          <DialogDescription asChild>
-            <div className="space-y-4 pt-2">
-              <p className="text-foreground font-medium">
-                <span className="text-accent font-bold">{challenge.challenger_name}</span> challenged you!
-              </p>
-              
-              <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Subject</span>
-                  <span className="font-medium">{challenge.subject_name}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Wager</span>
-                  <span className="font-bold text-accent flex items-center gap-1">
-                    <Trophy className="w-4 h-4" />
-                    {challenge.stake_points} points
-                  </span>
-                </div>
-              </div>
-
-              <p className="text-sm text-muted-foreground">
-                Win to claim the points, lose and they're gone!
-              </p>
-            </div>
-          </DialogDescription>
-        </DialogHeader>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Blurred backdrop */}
+      <div 
+        className="absolute inset-0 bg-background/80 backdrop-blur-md"
+        onClick={handleDismiss}
+      />
+      
+      {/* Modal content */}
+      <div className="relative z-10 w-full max-w-md mx-4 bg-card border-2 border-accent/30 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+        {/* Close button */}
+        <button 
+          onClick={handleDismiss}
+          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
         
-        <DialogFooter className="flex-col sm:flex-row gap-2 mt-4">
-          <Button variant="outline" onClick={handleDismiss} className="flex-1">
-            Later
-          </Button>
-          <Button variant="outline" onClick={handleViewChallenges} className="flex-1">
-            View Challenges
-          </Button>
-          <Button onClick={handlePlayNow} className="flex-1 gap-2">
-            <Zap className="w-4 h-4" />
+        {/* Header with icon */}
+        <div className="bg-gradient-to-br from-accent/20 to-primary/20 p-6 text-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-accent/20 flex items-center justify-center mb-4 animate-pulse">
+            <Swords className="w-10 h-10 text-accent" />
+          </div>
+          <h2 className="text-2xl font-black text-foreground">
+            You've Been Challenged!
+          </h2>
+        </div>
+        
+        {/* Content */}
+        <div className="p-6 space-y-4">
+          <p className="text-center text-lg">
+            <span className="text-accent font-bold">{challenge.challenger_name}</span>
+            {" "}wants to battle you!
+          </p>
+          
+          {/* Challenge details */}
+          <div className="bg-muted/50 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Subject</span>
+              <span className="font-semibold">{challenge.subject_name}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Wager</span>
+              <span className="font-bold text-accent flex items-center gap-2">
+                <Trophy className="w-5 h-5" />
+                {challenge.stake_points} points
+              </span>
+            </div>
+          </div>
+
+          <p className="text-sm text-center text-muted-foreground">
+            Win to claim the points, lose and they're gone!
+          </p>
+        </div>
+        
+        {/* Actions */}
+        <div className="p-6 pt-0 flex flex-col gap-3">
+          <Button onClick={handlePlayNow} size="lg" className="w-full gap-2 text-lg font-bold">
+            <Zap className="w-5 h-5" />
             Play Now
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={handleDismiss} className="flex-1">
+              Later
+            </Button>
+            <Button variant="outline" onClick={handleViewChallenges} className="flex-1">
+              View Challenges
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
