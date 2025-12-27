@@ -9,6 +9,7 @@ import { ArrowLeft, Swords, Trophy, Clock, RotateCcw, Minus, CheckCircle, XCircl
 import { useToast } from "@/hooks/use-toast";
 import LightningRound from "@/components/LightningRound";
 import ChallengeResultModal from "@/components/ChallengeResultModal";
+import ChallengeCountdown from "@/components/ChallengeCountdown";
 
 interface Challenge {
   id: string;
@@ -42,6 +43,7 @@ const Challenges = () => {
   const [completedChallenges, setCompletedChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null);
+  const [showCountdown, setShowCountdown] = useState(false);
   const [playingRound, setPlayingRound] = useState(false);
   const [resultChallenge, setResultChallenge] = useState<Challenge | null>(null);
   const navigate = useNavigate();
@@ -79,7 +81,7 @@ const Challenges = () => {
 
           if (!attempt) {
             setActiveChallenge(challenge as any);
-            setPlayingRound(true);
+            setShowCountdown(true);
           }
         }
       }
@@ -175,6 +177,11 @@ const Challenges = () => {
 
   const handlePlayChallenge = (challenge: Challenge) => {
     setActiveChallenge(challenge);
+    setShowCountdown(true);
+  };
+
+  const handleCountdownComplete = () => {
+    setShowCountdown(false);
     setPlayingRound(true);
   };
 
@@ -383,6 +390,16 @@ const Challenges = () => {
     if (challenge.winner_user_id === user?.id) return `+${challenge.stake_points}`;
     return `-${challenge.stake_points}`;
   };
+
+  // Show countdown before round
+  if (showCountdown && activeChallenge) {
+    return (
+      <ChallengeCountdown
+        subjectName={activeChallenge.subject_name}
+        onComplete={handleCountdownComplete}
+      />
+    );
+  }
 
   // If playing a round, show the Lightning Round
   if (playingRound && activeChallenge) {
