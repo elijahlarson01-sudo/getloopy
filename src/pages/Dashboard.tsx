@@ -356,9 +356,11 @@ const Dashboard = () => {
         </div>
 
         {/* Analytics Charts & Leaderboard */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <WeeklyActivityChart userId={user.id} />
-          <CohortLeaderboard userId={user.id} />
+          <div className="md:col-span-2">
+            <CohortLeaderboard userId={user.id} />
+          </div>
         </div>
 
         {/* Subjects */}
