@@ -122,7 +122,7 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
 
   if (loading) {
     return (
-      <Card className="p-6">
+      <Card className="p-6 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 border-2 border-primary/20 shadow-lg shadow-primary/10 h-full">
         <div className="animate-pulse space-y-3">
           <div className="h-5 bg-muted rounded w-1/3"></div>
           <div className="h-4 bg-muted rounded w-full"></div>
@@ -144,7 +144,7 @@ const CohortLeaderboard = ({ userId }: CohortLeaderboardProps) => {
   };
 
   return (
-    <Card className="p-6 border-2 border-accent/20">
+    <Card className="p-6 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 border-2 border-primary/20 shadow-lg shadow-primary/10 h-full">
       <div className="flex items-center gap-2 mb-4">
         <Users className="w-5 h-5 text-accent" />
         <h3 className="font-bold text-lg">Your Cohort</h3>

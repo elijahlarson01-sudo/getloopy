@@ -354,15 +354,9 @@ const Dashboard = () => {
 
         {/* Analytics Charts & Leaderboard */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl p-1 shadow-lg shadow-primary/5">
-            <WeeklyActivityChart userId={user.id} />
-          </div>
-          <div className="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent rounded-2xl p-1 shadow-lg shadow-accent/5">
-            <SubjectBreakdownChart subjects={subjects} subjectProgress={subjectProgress} />
-          </div>
-          <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent rounded-2xl p-1 shadow-lg shadow-primary/5">
-            <CohortLeaderboard userId={user.id} />
-          </div>
+          <WeeklyActivityChart userId={user.id} />
+          <SubjectBreakdownChart subjects={subjects} subjectProgress={subjectProgress} />
+          <CohortLeaderboard userId={user.id} />
         </div>
 
         {/* Subjects */}
