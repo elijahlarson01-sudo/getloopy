@@ -83,7 +83,19 @@ const Challenges = () => {
             .maybeSingle();
 
           if (!attempt) {
-            setActiveChallenge(challenge as any);
+            // Fetch subject name for the challenge
+            const { data: subject } = await supabase
+              .from("subjects")
+              .select("name")
+              .eq("id", challenge.subject_id)
+              .single();
+
+            const enrichedChallenge = {
+              ...challenge,
+              subject_name: subject?.name || "Unknown Subject",
+            };
+            
+            setActiveChallenge(enrichedChallenge as any);
             setShowCountdown(true);
           }
         }
