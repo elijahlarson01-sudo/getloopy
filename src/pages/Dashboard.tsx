@@ -156,8 +156,17 @@ const Dashboard = () => {
       return;
     }
 
-    // Filter subjects to only show user's selected interests (match by name OR id)
-    const filteredSubjects = selectedInterests.length > 0 ? subjectsData?.filter(s => selectedInterests.includes(s.name) || selectedInterests.includes(s.id)) || [] : subjectsData || [];
+    // Fetch modules to check which subjects have content
+    const { data: modulesData } = await supabase
+      .from("modules")
+      .select("subject_id");
+    
+    const subjectsWithModules = new Set(modulesData?.map(m => m.subject_id) || []);
+
+    // Filter subjects to only show user's selected interests AND only those with modules
+    const filteredSubjects = (subjectsData || [])
+      .filter(s => subjectsWithModules.has(s.id)) // Only show subjects with modules
+      .filter(s => selectedInterests.length === 0 || selectedInterests.includes(s.name) || selectedInterests.includes(s.id));
     setSubjects(filteredSubjects);
 
     // Fetch user subject progress

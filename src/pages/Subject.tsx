@@ -166,6 +166,29 @@ const Subject = () => {
     );
   }
 
+  if (modules.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
+        <header className="border-b border-border bg-card/50 backdrop-blur">
+          <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center gap-4">
+            <Button variant="ghost" onClick={() => navigate("/dashboard")}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-2xl font-black bg-gradient-to-r from-primary via-primary-light to-accent bg-clip-text text-transparent">
+              Loop
+            </h1>
+          </div>
+        </header>
+        <main className="container max-w-6xl mx-auto px-4 py-8 text-center">
+          <h2 className="text-3xl font-bold mb-4">{subject.name}</h2>
+          <p className="text-muted-foreground mb-6">No lessons available for this subject yet. Check back soon!</p>
+          <Button onClick={() => navigate("/dashboard")}>Return to Dashboard</Button>
+        </main>
+      </div>
+    );
+  }
+
   const IconComponent = iconMap[subject.icon] || Code;
   const levelGroups = groupModulesByLevel();
   const totalModules = modules.length;
