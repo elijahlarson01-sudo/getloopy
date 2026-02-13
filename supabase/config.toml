@@ -2,3 +2,6 @@ project_id = "cbulusbbuluccpkcksql"
 
 [functions.reset-weekly-points]
 verify_jwt = false
+
+[functions.make-webhook]
+verify_jwt = false
