@@ -155,6 +155,7 @@ const Subject = () => {
   };
 
   const handleModuleClick = (moduleId: string) => {
+    console.log("Navigating to lesson:", moduleId);
     navigate(`/lesson/${moduleId}`);
   };
 
