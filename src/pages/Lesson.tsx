@@ -290,6 +290,15 @@ const Lesson = () => {
     }
   };
 
+  const currentQuestion = questions.length > 0 ? questions[currentQuestionIndex] : null;
+  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+
+  // Shuffle options for each question - memoized by question id
+  const shuffledOptions = useMemo(() => {
+    if (!currentQuestion?.options) return undefined;
+    return shuffleArray(currentQuestion.options);
+  }, [currentQuestion?.id]);
+
   if (!module) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 flex items-center justify-center">
@@ -298,7 +307,7 @@ const Lesson = () => {
     );
   }
 
-  if (questions.length === 0) {
+  if (!currentQuestion) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
         <header className="border-b border-border bg-card/50 backdrop-blur">
@@ -320,15 +329,6 @@ const Lesson = () => {
       </div>
     );
   }
-
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-
-  // Shuffle options for each question - memoized by question id and index
-  const shuffledOptions = useMemo(() => {
-    if (!currentQuestion?.options) return undefined;
-    return shuffleArray(currentQuestion.options);
-  }, [currentQuestion?.id]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
